@@ -4,7 +4,7 @@ import { Outlet, useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { login, logout } from "./auth/authSlice";
 import axios from "./utils/axios";
-import { setLikedVideos, setVideos, setWatchHistory } from "./auth/videoSlice.js";
+import { setLikedVideos, setVideos, setWatchHistory, setWatchLater } from "./auth/videoSlice.js";
 import { formatVideoData } from "./utils/helpers";
 import Loading from "./components/Loading.jsx";
 
@@ -78,6 +78,20 @@ function App() {
     }
   }, [dispatch]);
 
+  const getWatchLater = useCallback(async () => {
+    try {
+      const { data } = await axios.get("/api/v1/playlists/watch-later");
+      const allVideos = data.data[0]?.videos || [];      
+      const formattedWatchLater = allVideos && allVideos.map(formatVideoData);
+      dispatch(setWatchLater({
+        id: data.data[0]?._id,
+        videos: formattedWatchLater
+      }));
+    } catch (error) {
+      console.error("Error fetching watch later videos:", error);
+    }
+  }, [dispatch]);
+
   // Initialize app - check auth
   useEffect(() => {
     const initializeApp = async () => {
@@ -99,6 +113,7 @@ function App() {
           getVideos(),
           getWatchHistory(),
           getLikedVideos(),
+          getWatchLater(),
         ]);
       }
       
@@ -114,6 +129,7 @@ function App() {
       getVideos();
       getWatchHistory();
       getLikedVideos();
+      getWatchLater();
     }
   }, [auth.status, getVideos]);
 

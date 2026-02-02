@@ -21,6 +21,8 @@ import UploadVideo from "./Pages/UploadVideo.jsx";
 import Channel from "./Pages/Channel.jsx";
 import AllPlaylists from "./Pages/AllPlaylists.jsx";
 import Playlist from "./Pages/Playlist.jsx";
+import History from "./Pages/History.jsx";
+import LikedVideos from "./Pages/LikedVideos.jsx";
 
 const router = createBrowserRouter(
   createRoutesFromElements([
@@ -36,6 +38,8 @@ const router = createBrowserRouter(
       <Route path="channel/:id" element={<Channel />} />
       <Route path="playlists" element={<AllPlaylists />} />
       <Route path="playlists/:id" element={<Playlist />} />
+      <Route path="history" element={<History/>}/>
+      <Route path="liked-videos" element={<LikedVideos/>}/>
     </Route>,
   ])
 );

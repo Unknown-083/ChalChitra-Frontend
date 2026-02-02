@@ -18,6 +18,7 @@ const SideNavPopUp = ({ closeSideNav }) => {
   const [isClosing, setIsClosing] = useState(false);
   const [subscriptions, setSubscriptions] = useState([]);
   const user = useSelector((state) => state.auth.userData);
+  const { watchLater } = useSelector((state) => state.video);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -103,7 +104,10 @@ const SideNavPopUp = ({ closeSideNav }) => {
 
           {/* Subscriptions */}
           <div className="space-y-1">
-            <p className="text-sm uppercase text-gray-400 px-3 mb-2">
+            <p
+              className="text-sm uppercase text-gray-400 hover:text-gray-300 cursor-pointer px-3 mb-2"
+              onClick={() => navigate("/subscriptions")}
+            >
               Subscriptions
             </p>
 
@@ -128,7 +132,12 @@ const SideNavPopUp = ({ closeSideNav }) => {
 
           {/* You */}
           <div className="space-y-1">
-            <p className="text-sm uppercase text-gray-400 px-3 mb-2">You</p>
+            <p
+              className="text-sm uppercase text-gray-400 hover:text-gray-300 cursor-pointer px-3 mb-2"
+              onClick={() => navigate("/profile")}
+            >
+              You
+            </p>
             <NavItem
               icon={User}
               label="Your Channel"
@@ -137,9 +146,30 @@ const SideNavPopUp = ({ closeSideNav }) => {
                 closeSideNav();
               }}
             />
-            <NavItem icon={History} label="History" />
-            <NavItem icon={Clock} label="Watch Later" />
-            <NavItem icon={ThumbsUp} label="Liked Videos" />
+            <NavItem
+              icon={History}
+              label="History"
+              onClick={() => {
+                navigate("/history");
+                closeSideNav();
+              }}
+            />
+            <NavItem
+              icon={Clock}
+              label="Watch Later"
+              onClick={() => {
+                navigate(`/playlists/${watchLater.id}`);
+                closeSideNav();
+              }}
+            />
+            <NavItem
+              icon={ThumbsUp}
+              label="Liked Videos"
+              onClick={() => {
+                navigate("/liked-videos");
+                closeSideNav();
+              }}
+            />
           </div>
         </div>
       </aside>
