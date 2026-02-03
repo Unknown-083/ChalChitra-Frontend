@@ -73,7 +73,7 @@ const Playlists = ({ grid = true, setPlaylistId, setPlaylistPopup }) => {
                 }}
               />
             </h3>
-            <p className="text-sm text-gray-500 hover:text-white cursor-pointer">
+            <p className="text-sm text-gray-500 hover:text-white cursor-pointer" onClick={() => navigate(`/playlists/${playlist._id}`)}>
               View full playlist
             </p>
           </div>

@@ -7,6 +7,7 @@ import Playlists from "../components/Playlists.jsx";
 import { useState } from "react";
 import { Pencil, Trash } from "lucide-react";
 import EditPlaylistPopup from "../components/EditPlaylistPopup.jsx";
+import DeletePlaylistPopup from "../components/DeletePlaylistPopup.jsx";
 
 const Profile = () => {
   const user = useSelector((state) => state.auth.userData);
@@ -17,6 +18,7 @@ const Profile = () => {
 
   const [playlistPopup, setPlaylistPopup] = useState(false);
   const [editPlaylistPopup, setEditPlaylistPopup] = useState(false);
+  const [deletePlaylistPopup, setDeletePlaylistPopup] = useState(false);
   const [playlistId, setPlaylistId] = useState(null);
   const [playlistData, setPlaylistData] = useState(null);
 
@@ -25,7 +27,10 @@ const Profile = () => {
     setEditPlaylistPopup(true);
   };
 
-  const handleDelete = async () => {};
+  const handleDelete = async () => {
+    setPlaylistPopup(false);
+    setDeletePlaylistPopup(true);
+  };
 
   return (
     <div className="min-h-screen">
@@ -61,7 +66,10 @@ const Profile = () => {
           <div className="mt-8 w-full">
             <div className="flex justify-between mb-3">
               <h2 className="text-2xl font-bold">History</h2>
-              <div className="rounded-full border border-[#272727] px-3 py-1 cursor-pointer" onClick={() => navigate("/history")}>
+              <div
+                className="rounded-full border border-[#272727] px-3 py-1 cursor-pointer"
+                onClick={() => navigate("/history")}
+              >
                 View all
               </div>
             </div>
@@ -125,12 +133,21 @@ const Profile = () => {
 
           {/* Edit Playlist Popup */}
 
-          {editPlaylistPopup && (<EditPlaylistPopup
-            id={playlistId}
-            setEditPopupOpen={setEditPlaylistPopup}
-            playlistData={playlistData}
-            setPlaylistData={setPlaylistData}
-          />)}
+          {editPlaylistPopup && (
+            <EditPlaylistPopup
+              id={playlistId}
+              setEditPopupOpen={setEditPlaylistPopup}
+              playlistData={playlistData}
+              setPlaylistData={setPlaylistData}
+            />
+          )}
+
+          {deletePlaylistPopup && (
+            <DeletePlaylistPopup
+              id={playlistId}
+              setDeletePlaylistPopup={setDeletePlaylistPopup}
+            />
+          )}
 
           {/* Watch Later */}
           <div className="mt-8">
@@ -165,7 +182,10 @@ const Profile = () => {
                   {likedVideos?.length <= 1 ? "video" : "videos"}
                 </p>
               </div>
-              <div className="rounded-full border h-fit border-[#272727] px-3 py-1 cursor-pointer" onClick={() => navigate("/liked-videos")}>
+              <div
+                className="rounded-full border h-fit border-[#272727] px-3 py-1 cursor-pointer"
+                onClick={() => navigate("/liked-videos")}
+              >
                 View all
               </div>
             </div>

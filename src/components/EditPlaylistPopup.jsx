@@ -8,9 +8,6 @@ const EditPlaylistPopup = ({
   setPlaylistData,
 }) => {
   useEffect(() => {
-    // fetch ONLY if playlistData is not provided
-    if (!id || playlistData) return;
-
     const getPlaylistData = async () => {
       try {
         const { data } = await axios.get(`/api/v1/playlists/${id}`);
@@ -33,7 +30,6 @@ const EditPlaylistPopup = ({
 
     console.log(data);
     setEditPopupOpen(false);
-    setPlaylistData(null);
   };
 
   return (
@@ -78,7 +74,6 @@ const EditPlaylistPopup = ({
               className="border-[#272727] border-2 hover:bg-[#272727] text-white px-4 py-2 rounded mr-2"
               onClick={() => {
                 setEditPopupOpen(false);
-                setPlaylistData(null);
               }}
             >
               Cancel
