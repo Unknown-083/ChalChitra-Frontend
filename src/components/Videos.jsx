@@ -4,7 +4,12 @@ import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import Loading from "./Loading";
 
-const Videos = ({ grid = true, videoArray = null }) => {
+const Videos = ({
+  grid = true,
+  videoArray = null,
+  setVideoId = () => {},
+  setVideoMenuPopup = () => {},
+}) => {
   const navigate = useNavigate();
   const [videos, setVideos] = useState(null);
 
@@ -118,7 +123,10 @@ const Videos = ({ grid = true, videoArray = null }) => {
               </div>
             </div>
 
-            <MoreVertical className="w-5 h-5 text-gray-400 hover:text-white cursor-pointer transition-colors opacity-0 group-hover:opacity-100 drop-shadow-sm" />
+            <MoreVertical className="w-5 h-5 text-gray-400 hover:text-white cursor-pointer transition-colors opacity-0 group-hover:opacity-100 drop-shadow-sm" onClick={() => {
+              setVideoId(video.id);
+              setVideoMenuPopup(true);
+            }}/>
           </div>
         </div>
       ))}

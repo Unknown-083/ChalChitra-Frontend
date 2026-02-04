@@ -53,7 +53,7 @@ const Profile = () => {
                 <span>{user?.username}</span>
                 <span>•</span>
                 <span
-                  className="cursor-pointer"
+                  className="cursor-pointer hover:underline"
                   onClick={() => navigate(`/channel/${user?._id}`)}
                 >
                   View channel
@@ -67,7 +67,7 @@ const Profile = () => {
             <div className="flex justify-between mb-3">
               <h2 className="text-2xl font-bold">History</h2>
               <div
-                className="rounded-full border border-[#272727] px-3 py-1 cursor-pointer"
+                className="rounded-full border border-[#272727] hover:bg-[#272727] px-3 py-1 cursor-pointer"
                 onClick={() => navigate("/history")}
               >
                 View all
@@ -87,7 +87,7 @@ const Profile = () => {
             <div className="flex justify-between mb-3">
               <h2 className="text-2xl font-bold">Playlists</h2>
               <div
-                className="rounded-full cursor-pointer border border-[#272727] px-3 py-1"
+                className="rounded-full cursor-pointer border border-[#272727] px-3 py-1 hover:bg-[#272727]"
                 onClick={() => navigate("/playlists")}
               >
                 View all
@@ -160,7 +160,7 @@ const Profile = () => {
                 </p>
               </div>
               <div
-                className="rounded-full cursor-pointer border h-fit border-[#272727] px-3 py-1"
+                className="rounded-full cursor-pointer border h-fit border-[#272727] hover:bg-[#272727] px-3 py-1"
                 onClick={() => navigate(`/playlists/${watchLater.id}`)}
               >
                 View all
@@ -183,7 +183,7 @@ const Profile = () => {
                 </p>
               </div>
               <div
-                className="rounded-full border h-fit border-[#272727] px-3 py-1 cursor-pointer"
+                className="rounded-full border h-fit border-[#272727] hover:bg-[#272727] px-3 py-1 cursor-pointer"
                 onClick={() => navigate("/liked-videos")}
               >
                 View all

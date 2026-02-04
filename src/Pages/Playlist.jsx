@@ -1,12 +1,14 @@
-import React, { use, useEffect } from "react";
+import React, { use, useEffect, useState } from "react";
 import Header from "../components/Header/Header";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import axios from "../utils/axios";
 import Videos from "../components/Videos";
 import { Pencil, Play, Plus } from "lucide-react";
 import { useSelector } from "react-redux";
 import { formatDate, formatVideoData } from "../utils/helpers";
 import EditPlaylistPopup from "../components/EditPlaylistPopup";
+import VideoMenuPopup from "../components/VideoMenuPopup";
+import { Navigate } from "react-router-dom";
 
 const Playlist = () => {
   const { id } = useParams();
@@ -17,6 +19,11 @@ const Playlist = () => {
   const [userVideos, setUserVideos] = React.useState([]);
   const [selectedVideos, setSelectedVideos] = React.useState([]);
   const user = useSelector((state) => state.auth.userData);
+
+  const [videoMenuPopup, setVideoMenuPopup] = useState(false);
+  const [videoId, setVideoId] = useState(null);
+
+  const navigate = useNavigate();
 
   useEffect(() => {
     // Any side effects or data fetching can be done here
@@ -100,18 +107,21 @@ const Playlist = () => {
           {/* Playlist crud operations */}
           <div className="flex py-4 gap-2">
             {/* Add Video to the playlist */}
-            <div className="flex px-3 py-2 bg-white text-black rounded-full items-center mr-2 cursor-pointer">
+            <div
+              className="flex px-3 py-2 bg-white text-black rounded-full items-center mr-2 cursor-pointer transition-all transform hover:scale-105"
+              onClick={() => navigate(`/video/${playlistData.videos[0]._id}`)}
+            >
               <Play className="w-6 h-6 mr-2" />
               <p className="font-bold">Play</p>
             </div>
             <div
-              className="rounded-full p-2 border border-white"
+              className="rounded-full cursor-pointer p-2 border border-white hover:bg-white hover:text-black"
               onClick={() => setAddVideoPopupOpen(true)}
             >
               {<Plus />}
             </div>
             <div
-              className="p-2 rounded-full border border-white"
+              className="p-2 cursor-pointer rounded-full border border-white hover:bg-white hover:text-black"
               onClick={() => setEditPopupOpen(true)}
             >
               <Pencil />
@@ -122,7 +132,11 @@ const Playlist = () => {
           <h2 className="text-2xl font-bold mb-4">Videos in Playlist</h2>
           <ul>
             {playlistData.videos && (
-              <Videos videoArray={playlistData.videos.map(formatVideoData)} />
+              <Videos
+                videoArray={playlistData.videos.map(formatVideoData)}
+                setVideoId={setVideoId}
+                setVideoMenuPopup={setVideoMenuPopup}
+              />
             )}
           </ul>
         </div>
@@ -299,6 +313,18 @@ const Playlist = () => {
             </div>
           </div>
         </div>
+      )}
+
+      {/* Video Menu Popup */}
+      {videoMenuPopup && (
+        <VideoMenuPopup
+          videoId={videoId}
+          playlistId={id}
+          playlistName={playlistData.name}
+          setVideoMenuPopup={setVideoMenuPopup}
+          setPlaylistData={setPlaylistData}
+          playlistData={playlistData}
+        />
       )}
     </div>
   );

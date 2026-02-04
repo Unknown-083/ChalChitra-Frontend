@@ -37,7 +37,7 @@ const SideNavPopUp = ({ closeSideNav }) => {
 
   const NavItem = ({ icon: Icon, label, onClick }) => (
     <button
-      className="flex items-center gap-5 px-3 py-2 rounded-lg hover:bg-[#272727] transition-colors"
+      className="flex items-center gap-5 px-3 py-2 cursor-pointer rounded-lg hover:bg-[#272727] transition-colors"
       onClick={onClick}
     >
       <Icon className="w-6 h-6" />

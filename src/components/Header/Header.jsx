@@ -23,22 +23,22 @@ const Header = () => {
         <Logo/>
       </div>
 
-      <div className="flex-1 max-w-2xl mx-8">
+      <div className="flex-1 max-w-2xl mx-8 cursor-pointer">
         <div className="relative">
           <Input
             placeholder="Search"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
           />
-          <button className="absolute right-2 top-1/2 transform -translate-y-1/2  hover:bg-[#393E46] p-2 rounded-full transition-colors">
-            <Search className="w-5 h-4 text-[#EEEEEE]" />
+          <button className="absolute right-0 top-1/2 transform -translate-y-1/2  hover:bg-[#272727] p-3 px-4 rounded-x-full rounded-r-full transition-colors border border-[#272727]">
+            <Search className="w-5 h-4 text-[#EEEEEE] cursor-pointer" />
           </button>
         </div>
       </div>
 
       <div className="flex items-center gap-4">
         <button
-          className="flex items-center gap-2 border border-[#272727] text-[#EEF0E5] px-4 py-2 rounded-full transition-all transform hover:scale-105"
+          className="flex items-center gap-2 border border-[#272727] text-[#EEF0E5] px-4 py-2 cursor-pointer rounded-full transition-all transform hover:scale-105"
           onClick={() => navigate("/upload")}
         >
           <Upload className="w-4 h-4" />
