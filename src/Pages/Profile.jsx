@@ -4,8 +4,7 @@ import Videos from "../components/Videos";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import Playlists from "../components/Playlists.jsx";
-import { useState } from "react";
-import PlaylistPopup from "../components/PlaylistPopup.jsx";
+import { setWatchLater } from "../auth/videoSlice.js";
 
 const Profile = () => {
   const user = useSelector((state) => state.auth.userData);
@@ -13,10 +12,6 @@ const Profile = () => {
   const { likedVideos } = useSelector((state) => state.video);
   const { watchLater } = useSelector((state) => state.video);
   const navigate = useNavigate();
-
-  const [playlistPopup, setPlaylistPopup] = useState(false);
-  const [playlistId, setPlaylistId] = useState(null);
-  const [playlistData, setPlaylistData] = useState(null);
 
   return (
     <div className="min-h-screen">
@@ -81,24 +76,9 @@ const Profile = () => {
             </div>
             {/* Playlist comp */}
             <div className="max-w-screen overflow-auto custom-scrollbar">
-              <Playlists
-                grid={false}
-                // setPlaylistId={setPlaylistId}
-                // setPlaylistPopup={setPlaylistPopup}
-              />
+              <Playlists grid={false} />
             </div>
           </div>
-
-          {/* Playlist Popup */}
-
-          {/* {playlistPopup && (
-            <PlaylistPopup
-              id={playlistId}
-              playlistData={playlistData}
-              setPlaylistPopup={setPlaylistPopup}
-              setPlaylistData={setPlaylistData}
-            />
-          )} */}
 
           {/* Watch Later */}
           <div className="mt-8">
@@ -119,7 +99,13 @@ const Profile = () => {
             </div>
             {/* Videos */}
             <div className="max-w-screen overflow-auto custom-scrollbar">
-              <Videos grid={false} videoArray={watchLater.videos} />
+              <Videos
+                grid={false}
+                videoArray={watchLater.videos}
+                playlistId={watchLater.id}
+                playlistName={"Watch Later"}
+                setPlaylistData={setWatchLater}
+              />
             </div>
           </div>
 

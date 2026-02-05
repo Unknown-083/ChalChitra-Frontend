@@ -15,7 +15,6 @@ const Playlists = ({ grid = true }) => {
     const getUserPlaylists = async () => {
       try {
         const { data } = await axios.get("/api/v1/playlists");
-        console.log(data.data);
         setPlaylists(data.data || []);
         // Handle playlists data as needed
       } catch (error) {

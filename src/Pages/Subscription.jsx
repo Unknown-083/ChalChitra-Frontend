@@ -16,7 +16,6 @@ const Subscription = () => {
         const { data } = await axios.get(
           `/api/v1/subscriptions/get-subscription-videos`,
         );
-        console.log(data.data);
         
         data.data && setVideos(data.data.map(formatVideoData));
       } catch (error) {

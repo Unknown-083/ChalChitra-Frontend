@@ -9,6 +9,7 @@ const VideoMenuPopup = ({
   playlistName,
   setVideoMenuPopup,
   setPlaylistData,
+  setVideos
 } = {}) => {
   const [mainMenuPopup, setMainMenuPopup] = useState(true);
   const [listPlaylistPopup, setListPlaylistPopup] = useState(false);
@@ -29,35 +30,33 @@ const VideoMenuPopup = ({
       `/api/v1/playlists/${playlistId}/videos/${videoId}`,
     );
     setVideoMenuPopup(false);
+    setVideos(prev => prev.filter((video) => video.id !== videoId));
     setPlaylistData((prev) => ({
       ...prev,
       videos: prev.videos.filter((video) => video._id !== videoId),
     }));
-    console.log(data);
   };
 
   const toggleVideoInPlaylist = async (id) => {
-    const { data } = await axios.patch(
+    await axios.patch(
       `/api/v1/playlists/${id}/videos/${videoId}`,
     );
-    setListPlaylistPopup(false);
     setVideoMenuPopup(false);
   };
 
   const saveVideoInWatchLater = async (id) => {
-    const {data} = await axios.get(`/api/v1/playlists/${id}`)
-    console.log(data.data.videos);
+    const { data } = await axios.get(`/api/v1/playlists/${id}`);
 
     const videos = data.data.videos;
 
-    if(!videos.some((v) => v._id!==videoId)) toggleVideoInPlaylist(id);
-    else {
-      setListPlaylistPopup(false);
-      setVideoMenuPopup(false);
-      console.log("works");
-      
-    }    
-  }
+    const alreadyExists = videos.some((v) => v._id === videoId);
+
+    if (!alreadyExists) {
+      await toggleVideoInPlaylist(id);
+    }
+
+    setVideoMenuPopup(false);
+  };
 
   return (
     <div className="top-7 z-20 backdrop-blur-xs fixed inset-0 bg-opacity-50 flex items-center justify-center">
@@ -80,12 +79,14 @@ const VideoMenuPopup = ({
             >
               <Bookmark /> Save to Playlist
             </h2>
-            <h2
-              className="flex items-center gap-3 cursor-pointer px-3 py-2 hover:bg-[#272727] rounded-2xl"
-              onClick={removeVideoFromPlaylist}
-            >
-              <CircleOff /> Remove from {playlistName}
-            </h2>
+            {playlistId && (
+              <h2
+                className="flex items-center gap-3 cursor-pointer px-3 py-2 hover:bg-[#272727] rounded-2xl"
+                onClick={removeVideoFromPlaylist}
+              >
+                <CircleOff /> Remove from {playlistName}
+              </h2>
+            )}
             <h2 className="flex items-center gap-3 cursor-pointer px-3 py-2 hover:bg-[#272727] rounded-2xl">
               <Share2 /> Share
             </h2>

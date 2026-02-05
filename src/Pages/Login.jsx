@@ -36,9 +36,7 @@ const Login = () => {
         ...(isEmail ? { email: username } : { username }),
         password,
       });
-
-      console.log("Login successful:", response.data.data);
-
+      
       // Store tokens if your backend sends them
       if (response.data.data.accessToken) {
         localStorage.setItem("accessToken", response.data.data.accessToken);

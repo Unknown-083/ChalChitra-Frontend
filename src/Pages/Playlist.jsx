@@ -7,7 +7,6 @@ import { Pencil, Play, Plus } from "lucide-react";
 import { useSelector } from "react-redux";
 import { formatDate, formatVideoData } from "../utils/helpers";
 import EditPlaylistPopup from "../components/PlaylistPopup";
-import VideoMenuPopup from "../components/VideoMenuPopup";
 
 const Playlist = () => {
   const { id } = useParams();
@@ -18,9 +17,6 @@ const Playlist = () => {
   const [userVideos, setUserVideos] = React.useState([]);
   const [selectedVideos, setSelectedVideos] = React.useState([]);
   const user = useSelector((state) => state.auth.userData);
-
-  const [videoMenuPopup, setVideoMenuPopup] = useState(false);
-  const [videoId, setVideoId] = useState(null);
 
   const navigate = useNavigate();
 
@@ -142,8 +138,9 @@ const Playlist = () => {
             {playlistData?.videos?.length > 0 && (
               <Videos
                 videoArray={playlistData.videos.map(formatVideoData)}
-                setVideoId={setVideoId}
-                setVideoMenuPopup={setVideoMenuPopup}
+                playlistId={playlistData._id}
+                playlistName={playlistData.name}
+                setPlaylistData={setPlaylistData}
               />
             )}
           </ul>
@@ -323,17 +320,6 @@ const Playlist = () => {
         </div>
       )}
 
-      {/* Video Menu Popup */}
-      {videoMenuPopup && (
-        <VideoMenuPopup
-          videoId={videoId}
-          playlistId={id}
-          playlistName={playlistData.name}
-          setVideoMenuPopup={setVideoMenuPopup}
-          setPlaylistData={setPlaylistData}
-          playlistData={playlistData}
-        />
-      )}
     </div>
   );
 };

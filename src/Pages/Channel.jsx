@@ -27,9 +27,6 @@ const Channel = () => {
     const fetchChannelData = async () => {
       try {
         const { data } = await axios.get(`api/v1/users/c/${id}`);
-        // Process the response data as needed
-        console.log(data.data);
-        
         setChannelData(data.data);
         setIsSubscribed(data.data.isSubscribed);
         setVideos(data.data.videos.map(formatVideoData));
@@ -40,118 +37,7 @@ const Channel = () => {
 
     fetchChannelData();
   }, [id]);
-
-  // const videos = [
-  //   {
-  //     id: 1,
-  //     title: "iPhone 15 Pro Max Complete Review - Worth the Upgrade?",
-  //     thumbnail: "📱",
-  //     views: "1.2M",
-  //     uploadTime: "2 days ago",
-  //     duration: "18:42",
-  //     likes: "89K",
-  //   },
-  //   {
-  //     id: 2,
-  //     title: "M3 MacBook Pro - Game Changer for Creators",
-  //     thumbnail: "💻",
-  //     views: "856K",
-  //     uploadTime: "5 days ago",
-  //     duration: "22:15",
-  //     likes: "67K",
-  //   },
-  //   {
-  //     id: 3,
-  //     title: "Best Budget Smartphones 2024 - Top 5 Picks",
-  //     thumbnail: "📲",
-  //     views: "645K",
-  //     uploadTime: "1 week ago",
-  //     duration: "15:33",
-  //     likes: "54K",
-  //   },
-  //   {
-  //     id: 4,
-  //     title: "PS5 vs Xbox Series X - Ultimate Gaming Comparison",
-  //     thumbnail: "🎮",
-  //     views: "923K",
-  //     uploadTime: "1 week ago",
-  //     duration: "25:10",
-  //     likes: "71K",
-  //   },
-  //   {
-  //     id: 5,
-  //     title: "AirPods Pro 2 Review - Are They Worth It?",
-  //     thumbnail: "🎧",
-  //     views: "534K",
-  //     uploadTime: "2 weeks ago",
-  //     duration: "12:28",
-  //     likes: "43K",
-  //   },
-  //   {
-  //     id: 6,
-  //     title: "Samsung Galaxy S24 Ultra - Everything You Need to Know",
-  //     thumbnail: "📱",
-  //     views: "1.1M",
-  //     uploadTime: "2 weeks ago",
-  //     duration: "20:45",
-  //     likes: "82K",
-  //   },
-  //   {
-  //     id: 7,
-  //     title: "Best Laptops for Students 2024 - Budget Friendly",
-  //     thumbnail: "💻",
-  //     views: "445K",
-  //     uploadTime: "3 weeks ago",
-  //     duration: "16:22",
-  //     likes: "38K",
-  //   },
-  //   {
-  //     id: 8,
-  //     title: "Smart Home Setup Tour - My Complete Setup",
-  //     thumbnail: "🏠",
-  //     views: "789K",
-  //     uploadTime: "3 weeks ago",
-  //     duration: "28:15",
-  //     likes: "61K",
-  //   },
-  //   {
-  //     id: 9,
-  //     title: "DJI Mini 4 Pro Drone Review - Best Travel Drone?",
-  //     thumbnail: "🚁",
-  //     views: "367K",
-  //     uploadTime: "1 month ago",
-  //     duration: "19:50",
-  //     likes: "29K",
-  //   },
-  //   {
-  //     id: 10,
-  //     title: "Apple Vision Pro - The Future of Computing?",
-  //     thumbnail: "🥽",
-  //     views: "2.1M",
-  //     uploadTime: "1 month ago",
-  //     duration: "32:18",
-  //     likes: "156K",
-  //   },
-  //   {
-  //     id: 11,
-  //     title: "Gaming PC Build Guide 2024 - Step by Step",
-  //     thumbnail: "🖥️",
-  //     views: "678K",
-  //     uploadTime: "1 month ago",
-  //     duration: "35:42",
-  //     likes: "52K",
-  //   },
-  //   {
-  //     id: 12,
-  //     title: "Camera Comparison - iPhone vs Professional DSLR",
-  //     thumbnail: "📷",
-  //     views: "523K",
-  //     uploadTime: "2 months ago",
-  //     duration: "21:15",
-  //     likes: "41K",
-  //   },
-  // ];
-
+  
   const stats = [
     { icon: Users, label: "Subscribers", value: channelData.subscribersCount },
     { icon: Video, label: "Videos", value: channelData.totalVideos },

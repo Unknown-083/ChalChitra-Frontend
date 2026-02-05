@@ -106,13 +106,11 @@ const Signup = () => {
         formData.append("coverImage", coverImage);
       }
 
-      const response = await axios.post("/api/v1/users/register", formData, {
+      await axios.post("/api/v1/users/register", formData, {
         headers: {
           "Content-Type": "multipart/form-data",
         },
       });
-
-      console.log("Signup successful:", response.data);
 
       // Reset form
       setAvatar(null);

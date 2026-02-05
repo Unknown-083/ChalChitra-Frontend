@@ -3,15 +3,19 @@ import { MoreVertical, Play, AlertCircle } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import Loading from "./Loading";
+import VideoMenuPopup from "./VideoMenuPopup";
 
 const Videos = ({
   grid = true,
   videoArray = null,
-  setVideoId = () => {},
-  setVideoMenuPopup = () => {},
+  playlistId = null,
+  playlistName = null,
+  setPlaylistData = () => {},
 }) => {
   const navigate = useNavigate();
   const [videos, setVideos] = useState(null);
+  const [videoMenuPopup, setVideoMenuPopup] = useState(false);
+  const [videoId, setVideoId] = useState(null);
 
   const localVideos = useSelector((state) => state.video.videos);
 
@@ -133,6 +137,18 @@ const Videos = ({
           </div>
         </div>
       ))}
+
+      {/* Video Menu Popup */}
+      {videoMenuPopup && (
+        <VideoMenuPopup
+          videoId={videoId}
+          playlistId={playlistId}
+          playlistName={playlistName}
+          setVideoMenuPopup={setVideoMenuPopup}
+          setPlaylistData={setPlaylistData}
+          setVideos={setVideos}
+        />
+      )}
     </div>
   );
 };

@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import axios from "../utils/axios.js";
 import Header from "../components/Header/Header.jsx";
 import SideNav from "../components/Header/SideNav.jsx";
 import { useSelector } from "react-redux";

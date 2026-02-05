@@ -7,18 +7,14 @@ import axios from "../utils/axios";
 const AllPlaylists = () => {
   const [createPlaylistPopup, setCreatePlaylistPopup] = React.useState(false);
   const [playlistData, setPlaylistData] = React.useState({});
-  const [playlistPopup, setPlaylistPopup] = React.useState(false);
 
   const handleCreatePlaylist = async(e) => {
     e.preventDefault();
 
-    console.log("PlaylistData :: ", playlistData);
-    const {data} = await axios.post("/api/v1/playlists", {
+    await axios.post("/api/v1/playlists", {
       name: playlistData.name,
       description: playlistData.description
-    });
-
-    console.log(data);    
+    }); 
 
     setCreatePlaylistPopup(false);
     setPlaylistData({});
@@ -94,10 +90,6 @@ const AllPlaylists = () => {
         </div>
       )}
 
-      {/* Delete Playlist Popup */}
-      {playlistPopup && 
-        <div className="flex">delete playlist</div>
-      }
     </div>
   );
 };

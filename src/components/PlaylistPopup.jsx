@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Pencil, Trash } from "lucide-react";
 import axios from "../utils/axios";
 
@@ -16,22 +16,7 @@ const PlaylistPopup = ({
     name: "",
     description: "",
   });
-
-  // useEffect(() => {
-  //   const getPlaylistData = async () => {
-  //     try {
-  //       const { data } = await axios.get(`/api/v1/playlists/${id}`);
-  //       setPlaylistData(data.data);
-  //     } catch (err) {
-  //       console.error(err);
-  //     }
-  //   };
-
-  //   if (!playlistData && id) {
-  //     getPlaylistData();
-  //   }
-  // }, [id]);
-
+  
   useEffect(() => {
     if (editPopup && playlistData) {
       setEditData({
@@ -45,7 +30,6 @@ const PlaylistPopup = ({
     e.preventDefault();
 
     const { data } = await axios.patch(`/api/v1/playlists/${id}`, editData);
-    console.log(data);
 
     setPlaylists?.((prev) =>
       prev.map((pl) =>
