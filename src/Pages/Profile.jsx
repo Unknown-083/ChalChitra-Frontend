@@ -5,9 +5,7 @@ import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import Playlists from "../components/Playlists.jsx";
 import { useState } from "react";
-import { Pencil, Trash } from "lucide-react";
-import EditPlaylistPopup from "../components/EditPlaylistPopup.jsx";
-import DeletePlaylistPopup from "../components/DeletePlaylistPopup.jsx";
+import PlaylistPopup from "../components/PlaylistPopup.jsx";
 
 const Profile = () => {
   const user = useSelector((state) => state.auth.userData);
@@ -17,20 +15,8 @@ const Profile = () => {
   const navigate = useNavigate();
 
   const [playlistPopup, setPlaylistPopup] = useState(false);
-  const [editPlaylistPopup, setEditPlaylistPopup] = useState(false);
-  const [deletePlaylistPopup, setDeletePlaylistPopup] = useState(false);
   const [playlistId, setPlaylistId] = useState(null);
   const [playlistData, setPlaylistData] = useState(null);
-
-  const handleEdit = async () => {
-    setPlaylistPopup(false);
-    setEditPlaylistPopup(true);
-  };
-
-  const handleDelete = async () => {
-    setPlaylistPopup(false);
-    setDeletePlaylistPopup(true);
-  };
 
   return (
     <div className="min-h-screen">
@@ -97,57 +83,22 @@ const Profile = () => {
             <div className="max-w-screen overflow-auto custom-scrollbar">
               <Playlists
                 grid={false}
-                setPlaylistId={setPlaylistId}
-                setPlaylistPopup={setPlaylistPopup}
+                // setPlaylistId={setPlaylistId}
+                // setPlaylistPopup={setPlaylistPopup}
               />
             </div>
           </div>
 
           {/* Playlist Popup */}
 
-          {playlistPopup && (
-            <div className="fixed inset-0 dark-scrollbar z-50 flex items-center justify-center px-2 sm:px-4 overflow-y-auto">
-              <div className="bg-[#0f0f0f] border border-gray-700 p-4 sm:p-6 rounded-lg flex flex-col gap-2 max-h-[90vh] overflow-y-auto">
-                <h2
-                  className="p-2 text-lg flex gap-2 items-center hover:bg-[#272727] rounded cursor-pointer"
-                  onClick={handleEdit}
-                >
-                  <Pencil /> Edit
-                </h2>
-                <h2
-                  className="p-2 text-lg text-red-500 hover:bg-[#272727] flex gap-2 items-center rounded cursor-pointer"
-                  onClick={handleDelete}
-                >
-                  <Trash className="text-red-500" /> Delete
-                </h2>
-
-                <p
-                  className="self-center text-sm text-gray-500 underline cursor-pointer"
-                  onClick={() => setPlaylistPopup(false)}
-                >
-                  Close
-                </p>
-              </div>
-            </div>
-          )}
-
-          {/* Edit Playlist Popup */}
-
-          {editPlaylistPopup && (
-            <EditPlaylistPopup
+          {/* {playlistPopup && (
+            <PlaylistPopup
               id={playlistId}
-              setEditPopupOpen={setEditPlaylistPopup}
               playlistData={playlistData}
+              setPlaylistPopup={setPlaylistPopup}
               setPlaylistData={setPlaylistData}
             />
-          )}
-
-          {deletePlaylistPopup && (
-            <DeletePlaylistPopup
-              id={playlistId}
-              setDeletePlaylistPopup={setDeletePlaylistPopup}
-            />
-          )}
+          )} */}
 
           {/* Watch Later */}
           <div className="mt-8">

@@ -1,4 +1,4 @@
-import React, { use, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import Header from "../components/Header/Header";
 import { useNavigate, useParams } from "react-router-dom";
 import axios from "../utils/axios";
@@ -6,9 +6,8 @@ import Videos from "../components/Videos";
 import { Pencil, Play, Plus } from "lucide-react";
 import { useSelector } from "react-redux";
 import { formatDate, formatVideoData } from "../utils/helpers";
-import EditPlaylistPopup from "../components/EditPlaylistPopup";
+import EditPlaylistPopup from "../components/PlaylistPopup";
 import VideoMenuPopup from "../components/VideoMenuPopup";
-import { Navigate } from "react-router-dom";
 
 const Playlist = () => {
   const { id } = useParams();
@@ -53,27 +52,32 @@ const Playlist = () => {
   }, [AddVideoPopupOpen]);
 
   const handleAddVideosToPlaylist = async () => {
-    // Handle adding selected videos to the playlist
-
-    selectedVideos.map(async (videoId) => {
-      const { data } = await axios.post(
-        `/api/v1/playlists/${id}/videos/${videoId}`,
-      );
-      console.log(data);
-    });
+  try {
+    await Promise.all(
+      selectedVideos.map((videoId) =>
+        axios.post(`/api/v1/playlists/${id}/videos/${videoId}`)
+      )
+    );
 
     setPlaylistData((prev) => ({
       ...prev,
       videos: [
         ...prev.videos,
-        ...allVideos.filter((video) => selectedVideos.includes(video._id)),
+        ...allVideos.filter(
+          (video) =>
+            selectedVideos.includes(video._id) &&
+            !prev.videos.some((v) => v._id === video._id)
+        ),
       ],
     }));
-    // Clear selection and close popup
 
     setSelectedVideos([]);
     setAddVideoPopupOpen(false);
-  };
+  } catch (err) {
+    console.error(err);
+  }
+};
+
 
   return (
     <div>
@@ -109,7 +113,11 @@ const Playlist = () => {
             {/* Add Video to the playlist */}
             <div
               className="flex px-3 py-2 bg-white text-black rounded-full items-center mr-2 cursor-pointer transition-all transform hover:scale-105"
-              onClick={() => navigate(`/video/${playlistData.videos[0]._id}`)}
+              onClick={() => {
+                if (playlistData?.videos?.length) {
+                  navigate(`/video/${playlistData.videos[0]._id}`);
+                }
+              }}
             >
               <Play className="w-6 h-6 mr-2" />
               <p className="font-bold">Play</p>
@@ -120,18 +128,18 @@ const Playlist = () => {
             >
               {<Plus />}
             </div>
-            <div
+            {(playlistData.name!="Watch Later") && (<div
               className="p-2 cursor-pointer rounded-full border border-white hover:bg-white hover:text-black"
               onClick={() => setEditPopupOpen(true)}
             >
               <Pencil />
-            </div>
+            </div>)}
           </div>
         </div>
         <div className="w-2/3 p-4">
           <h2 className="text-2xl font-bold mb-4">Videos in Playlist</h2>
           <ul>
-            {playlistData.videos && (
+            {playlistData?.videos?.length > 0 && (
               <Videos
                 videoArray={playlistData.videos.map(formatVideoData)}
                 setVideoId={setVideoId}
@@ -148,7 +156,7 @@ const Playlist = () => {
           id={id}
           playlistData={playlistData}
           setPlaylistData={setPlaylistData}
-          setEditPopupOpen={setEditPopupOpen}
+          setPlaylistPopup={setEditPopupOpen}
         />
       )}
 
