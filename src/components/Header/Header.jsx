@@ -15,7 +15,7 @@ const Header = () => {
       {sideNavPopupOpen && (
         <SideNavPopUp closeSideNav={() => setSideNavPopupOpen(false)} />
       )}
-      <div className="flex items-center gap-6">
+      <div className="flex items-center gap-5">
         <Menu
           className="w-6 h-6 font-extralight cursor-pointer hover:text-gray-300 transition-colors"
           onClick={() => setSideNavPopupOpen(!sideNavPopupOpen)}
