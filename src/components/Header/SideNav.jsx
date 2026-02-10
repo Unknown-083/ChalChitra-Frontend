@@ -1,65 +1,166 @@
 import React from "react";
 import { HomeIcon, User, LogOut } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import axios from "../../utils/axios.js";
 import { useDispatch } from "react-redux";
 import { logout as authLogout } from "../../auth/authSlice";
 
 const SideNav = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const dispatch = useDispatch();
 
-  const hangleLogout = () => {
-    // Clear user data from local storage or cookies
-    axios.post("/api/v1/users/logout")
-    .then((res) => {
-      console.log("Logged out", res);
-      dispatch(authLogout());
-      navigate("/login");
-    })
-    .catch((err) => {
-      console.error("Logout error:", err.response ? err.response.data : err.message);
-    });
-  }
+  const handleLogout = () => {
+    axios
+      .post("/api/v1/users/logout")
+      .then((res) => {
+        console.log("Logged out", res);
+        dispatch(authLogout());
+        navigate("/login");
+      })
+      .catch((err) => {
+        console.error(
+          "Logout error:",
+          err.response ? err.response.data : err.message
+        );
+      });
+  };
+
+  const navItems = [
+    {
+      icon: <HomeIcon className="w-6 h-6" />,
+      label: "Home",
+      path: "/",
+      onClick: () => navigate("/"),
+      hoverColor: "hover:bg-[#272727]",
+    },
+    {
+      icon: (
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          height="24px"
+          viewBox="0 -960 960 960"
+          width="24px"
+          fill="currentColor"
+          className="w-6 h-6"
+        >
+          <path d="M160-80q-33 0-56.5-23.5T80-160v-400q0-33 23.5-56.5T160-640h640q33 0 56.5 23.5T880-560v400q0 33-23.5 56.5T800-80H160Zm0-80h640v-400H160v400Zm240-40 240-160-240-160v320ZM160-680v-80h640v80H160Zm120-120v-80h400v80H280ZM160-160v-400 400Z" />
+        </svg>
+      ),
+      label: "Subscriptions",
+      path: "/subscriptions",
+      onClick: () => navigate("/subscriptions"),
+      hoverColor: "hover:bg-[#272727]",
+    },
+    {
+      icon: <User className="w-6 h-6" />,
+      label: "Profile",
+      path: "/profile",
+      onClick: () => navigate("/profile"),
+      hoverColor: "hover:bg-[#272727]",
+    },
+    {
+      icon: <LogOut className="w-6 h-6" />,
+      label: "Logout",
+      path: null,
+      onClick: handleLogout,
+      hoverColor: "hover:bg-[#db0202] hover:border-[#db0202]",
+    },
+  ];
+
   return (
-    <div className="fixed min-h-screen min-w-15 p-2 flex flex-col gap-5">
-      {/* <h1>sidenav</h1> */}
-      <div className="flex flex-col items-center gap-0.5" onClick={() => navigate("/")}>
-        <div className="rounded-full border border-[#272727] mx-auto hover:bg-[#272727] p-3 cursor-pointer content-center">
-          <HomeIcon />
-        </div>
-        <p className="text-[10px]">Home</p>
-      </div>
+    <>
+      {/* Desktop / Tablet */}
+      <aside className="hidden lg:block fixed left-0 top-14 sm:top-16 md:top-[68px]
+        h-[calc(100vh-3.5rem)] sm:h-[calc(100vh-4rem)] md:h-[calc(100vh-68px)]
+        bg-[#0f0f0f] border-r border-[#272727]
+        w-16 xl:w-18 overflow-y-auto scrollbar-hide z-40">
+        <nav className="flex flex-col gap-4 xl:gap-5 pt-4 w-full ">
+          {navItems.map((item, index) => {
+            const isActive =
+              item.path && location.pathname === item.path;
 
-      <div className="flex flex-col items-center gap-0.5" onClick={() => navigate("/subscriptions")}>
-        <div className="rounded-full border border-[#272727] mx-auto hover:bg-[#272727] p-3 cursor-pointer content-center">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            height="24px"
-            viewBox="0 -960 960 960"
-            width="24px"
-            fill="#e3e3e3"
-          >
-            <path d="M160-80q-33 0-56.5-23.5T80-160v-400q0-33 23.5-56.5T160-640h640q33 0 56.5 23.5T880-560v400q0 33-23.5 56.5T800-80H160Zm0-80h640v-400H160v400Zm240-40 240-160-240-160v320ZM160-680v-80h640v80H160Zm120-120v-80h400v80H280ZM160-160v-400 400Z" />
-          </svg>
-        </div>
-        <p className="text-[10px]">Subscriptions</p>
-      </div>
+            return (
+              <div
+                key={index}
+                className="flex flex-col items-center gap-1 group cursor-pointer"
+                onClick={item.onClick}
+              >
+                <div
+                  className={`
+                    rounded-full p-3 transition-all duration-200
+                    ${
+                      isActive
+                        ? "bg-white text-black border border-white"
+                        : `border border-[#272727] text-white ${item.hoverColor}`
+                    }
+                  `}
+                >
+                  {item.icon}
+                </div>
 
-      <div className="flex flex-col items-center gap-0.5" onClick={() => navigate("/profile")}>
-        <div className="rounded-full border border-[#272727] mx-auto hover:bg-[#272727] p-3 cursor-pointer content-center">
-          <User />
-        </div>
-        <p className="text-[10px]">Profile</p>
-      </div>
+                <p
+                  className={`text-[10px] xl:text-xs text-center transition-colors 
+                    ${
+                      isActive
+                        ? "text-white"
+                        : "text-gray-400 group-hover:text-white"
+                    }
+                  `}
+                >
+                  {item.label}
+                </p>
+              </div>
+            );
+          })}
+        </nav>
+      </aside>
 
-      <div className="flex flex-col items-center gap-0.5" onClick={hangleLogout}>
-        <div className="rounded-full border border-[#272727] mx-auto hover:bg-[#db0202] hover:border-[#db0202] p-3 cursor-pointer content-center">
-          <LogOut />
+      {/* Mobile Bottom Nav */}
+      <nav className="lg:hidden fixed bottom-0 left-0 right-0 z-50
+        bg-[#0f0f0f] border-t border-[#272727]
+        backdrop-blur-md bg-opacity-95 safe-area-inset-bottom">
+        <div className="flex justify-around items-center px-2 py-3">
+          {navItems.map((item, index) => {
+            const isActive =
+              item.path && location.pathname === item.path;
+
+            return (
+              <button
+                key={index}
+                className={`
+                  rounded-full p-3 transition-all duration-200
+                  ${
+                    isActive
+                      ? "bg-white text-black border border-white"
+                      : "border border-[#272727] text-white"
+                  }
+                  ${item.hoverColor}
+                  active:scale-95
+                `}
+                onClick={item.onClick}
+                aria-label={item.label}
+              >
+                {item.icon}
+              </button>
+            );
+          })}
         </div>
-        <p className="text-[10px]">Logout</p>
-      </div>
-    </div>
+      </nav>
+
+      <style jsx>{`
+        .scrollbar-hide::-webkit-scrollbar {
+          display: none;
+        }
+        .scrollbar-hide {
+          -ms-overflow-style: none;
+          scrollbar-width: none;
+        }
+        .safe-area-inset-bottom {
+          padding-bottom: env(safe-area-inset-bottom);
+        }
+      `}</style>
+    </>
   );
 };
 

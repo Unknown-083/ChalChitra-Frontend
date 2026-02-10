@@ -1,16 +1,29 @@
 import React from "react";
-import { Play } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import logo from "../../../public/logo.png"
 
-const Logo = () => {
+const Logo = ({ compact = false }) => {
   const navigate = useNavigate();
+  
   return (
     <div
-      className="flex items-center gap-1 cursor-pointer group"
+      className="flex items-center gap-2.5 cursor-pointer group"
       onClick={() => navigate("/")}
     >
-      <img src="logo.png" alt="" className="object-cover w-13 rounded-lg" />
-      <h3 className="text-xl font-bold">चलचित्र</h3>
+      <img 
+        src={logo} 
+        alt="चलचित्र" 
+        className={`object-contain brightness-100 group-hover:brightness-110 
+                    transition-all duration-200
+                    ${compact ? 'h-7' : 'h-8 sm:h-9 md:h-10'}`}
+      />
+      {!compact && (
+        <h3 className="text-xl sm:text-2xl font-bold text-white 
+                       tracking-tight whitespace-nowrap
+                       transition-opacity group-hover:opacity-80">
+          चलचित्र
+        </h3>
+      )}
     </div>
   );
 };

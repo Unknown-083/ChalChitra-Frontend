@@ -1,9 +1,8 @@
-import React, { use, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import {
   X,
   Home,
   Flame,
-  PlaySquare,
   Clock,
   ThumbsUp,
   User,
@@ -61,11 +60,11 @@ const SideNavPopUp = ({ closeSideNav }) => {
   return (
     <>
       {/* Backdrop */}
-      <div className="fixed inset-0 bg-black/50 z-40" onClick={handleClose} />
+      <div className="fixed inset-0 bg-black/50 z-500" onClick={handleClose} />
 
       {/* Side Nav */}
       <aside
-        className={`fixed top-0 left-0 h-screen w-64 bg-[#0f0f0f] z-50
+        className={`fixed top-0 left-0 h-screen w-64 bg-[#0f0f0f] z-500
           ${isClosing ? "animate-slide-out" : "animate-slide-in"}
         `}
       >

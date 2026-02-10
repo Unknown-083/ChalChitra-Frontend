@@ -5,6 +5,7 @@ import Videos from "../components/Videos.jsx";
 import { useNavigate } from "react-router-dom";
 import axios from "../utils/axios.js";
 import { formatVideoData } from "../utils/helpers.js";
+import MainLayout from "../layout/MainLayout.jsx";
 
 const Subscription = () => {
   const navigate = useNavigate();
@@ -14,10 +15,10 @@ const Subscription = () => {
     const fetchSubscriptionVideos = async () => {
       try {
         const { data } = await axios.get(
-          `/api/v1/subscriptions/get-subscription-videos`,
+          `/api/v1/subscriptions/get-subscription-videos`
         );
-        
-        data.data && setVideos(data.data.map(formatVideoData));
+
+        data?.data && setVideos(data.data.map(formatVideoData));
       } catch (error) {
         console.error("Error fetching subscription videos:", error);
       }
@@ -26,25 +27,38 @@ const Subscription = () => {
   }, []);
 
   return (
-    <div className="min-h-screen text-white">
+    <MainLayout>
       <Header />
+
       <div className="flex w-full">
-        <SideNav />
-        <div className="p-6 ml-15 w-full">
-          <h1 className="text-3xl font-bold mb-4">Subscription</h1>
-          <div className="flex justify-between mb-4 w-full">
-            <h2 className="text-xl text-gray-400">Latest Videos</h2>
+        {/* Hide SideNav on small screens */}
+        <SideNav/>
+
+        <div className="w-full py-4 md:p-6">
+          {/* Title */}
+          <h1 className="text-2xl px-2 md:text-3xl font-bold mb-3">
+            Subscription
+          </h1>
+
+          {/* Header Row */}
+          <div className="flex px-2 sm:flex-row items-center justify-between gap-2 mb-4">
+            <h2 className="text-lg md:text-xl text-gray-400">
+              Latest Videos
+            </h2>
+
             <h2
-              className="text-md text-blue-400 cursor-pointer hover:text-blue-500"
+              className="text-sm md:text-md text-blue-400 cursor-pointer hover:text-blue-500 self-start sm:self-auto"
               onClick={() => navigate("/all-subscriptions")}
             >
               Manage
             </h2>
           </div>
-          <Videos videoArray={videos}/>
+
+          {/* Videos */}
+          <Videos videoArray={videos} />
         </div>
       </div>
-    </div>
+    </MainLayout>
   );
 };
 

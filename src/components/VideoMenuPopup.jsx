@@ -1,7 +1,8 @@
 import { Bookmark, CircleOff, Clock, Share2 } from "lucide-react";
 import axios from "../utils/axios";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useSelector } from "react-redux";
+import ListPlaylistPopup from "./ListPlaylistPopup";
 
 const VideoMenuPopup = ({
   videoId,
@@ -9,39 +10,23 @@ const VideoMenuPopup = ({
   playlistName,
   setVideoMenuPopup,
   setPlaylistData,
-  setVideos
+  setVideos,
 } = {}) => {
   const [mainMenuPopup, setMainMenuPopup] = useState(true);
   const [listPlaylistPopup, setListPlaylistPopup] = useState(false);
-  const [playlists, setPlaylists] = useState([]);
 
   const { watchLater } = useSelector((state) => state.video);
 
-  useEffect(() => {
-    const fetchAllPlaylists = async () => {
-      const { data } = await axios.get("/api/v1/playlists");
-      setPlaylists(data.data);
-    };
-    fetchAllPlaylists();
-  }, [setListPlaylistPopup]);
-
   const removeVideoFromPlaylist = async () => {
-    const { data } = await axios.delete(
+    await axios.delete(
       `/api/v1/playlists/${playlistId}/videos/${videoId}`,
     );
     setVideoMenuPopup(false);
-    setVideos(prev => prev.filter((video) => video.id !== videoId));
+    setVideos((prev) => prev.filter((video) => video.id !== videoId));
     setPlaylistData((prev) => ({
       ...prev,
       videos: prev.videos.filter((video) => video._id !== videoId),
     }));
-  };
-
-  const toggleVideoInPlaylist = async (id) => {
-    await axios.patch(
-      `/api/v1/playlists/${id}/videos/${videoId}`,
-    );
-    setVideoMenuPopup(false);
   };
 
   const saveVideoInWatchLater = async (id) => {
@@ -102,7 +87,7 @@ const VideoMenuPopup = ({
       )}
 
       {/* List Playlist to add video */}
-      {listPlaylistPopup && (
+      {/* {listPlaylistPopup && (
         <div className="bg-[#0f0f0f] w-1/3 border border-gray-700 p-4 rounded-lg">
           <div className="flex flex-col mb-2 text-lg">
             {playlists &&
@@ -140,6 +125,13 @@ const VideoMenuPopup = ({
             Cancel
           </button>
         </div>
+      )} */}
+      {listPlaylistPopup && (
+        <ListPlaylistPopup
+          videoId={videoId}
+          setListPlaylistPopup={setListPlaylistPopup}
+          setVideoMenuPopup={setVideoMenuPopup}
+        />
       )}
     </div>
   );

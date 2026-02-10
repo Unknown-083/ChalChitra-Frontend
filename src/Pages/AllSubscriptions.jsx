@@ -18,7 +18,6 @@ const AllSubscriptions = () => {
 
   const handleSubscribe = async (subscription) => {
     await toggleSubscribe({ channelId: subscription._id });
-    // Toggle the subscription status for this specific subscription
     setSubscribedState((prev) => ({
       ...prev,
       [subscription._id]: !prev[subscription._id],
@@ -28,54 +27,69 @@ const AllSubscriptions = () => {
   return (
     <div className="min-h-screen text-white">
       <Header />
+
       <div className="flex">
-        <SideNav />
-        <div className="p-6 px-10 ml-15 w-full">
-          <h1 className="text-3xl font-bold text-white mb-4">
+        {/* Hide SideNav on mobile */}
+        <SideNav/>
+
+        <div className="w-full px-2 py-4 md:p-6 md:px-10 md:ml-15">
+          <h1 className="text-2xl md:text-3xl font-bold mb-6">
             All Subscriptions
           </h1>
 
           {subscriptions.map((subscription) => (
             <div
               key={subscription._id}
-              className="w-full flex items-center justify-between mb-4"
+              className="
+              w-full 
+              bg-[#181818] 
+              rounded-xl 
+              p-3 
+              mb-2
+              flex items-center gap-3
+              md:bg-transparent md:rounded-none md:p-0
+              md:flex md:items-center md:justify-between"
             >
-              <div className="rounded-full min-w-40 h-40 content-center cursor-pointer">
-                <img
-                  src={subscription?.avatar?.url}
-                  alt="avatar"
-                  className="w-full h-full rounded-full"
-                  onClick={() => navigate(`/channel/${subscription._id}`)}
-                />
-              </div>
-
-              <div className="w-full pl-4">
-                <h2
-                  className="text-xl mb-3 cursor-pointer"
+              {/* Left section */}
+              <div className="flex items-center gap-3 flex-1">
+                {/* Avatar */}
+                <div
+                  className="w-12 h-12 md:w-40 md:h-40 shrink-0 cursor-pointer"
                   onClick={() => navigate(`/channel/${subscription._id}`)}
                 >
-                  {subscription.fullname}
-                </h2>
-                <div className="text-xs text-gray-400 flex items-center gap-1 mb-2">
-                  <span>{subscription.username}</span>
-                  <span>•</span>
-                  <span>{subscription.subscribersCount || 0} subscribers</span>
+                  <img
+                    src={subscription?.avatar?.url}
+                    alt="avatar"
+                    className="w-full h-full rounded-full object-cover"
+                  />
+                </div>
+
+                {/* Text */}
+                <div className="flex flex-col">
+                  <h2
+                    className="text-sm md:text-xl font-medium cursor-pointer leading-tight"
+                    onClick={() => navigate(`/channel/${subscription._id}`)}
+                  >
+                    {subscription.fullname}
+                  </h2>
+
+                  <span className="text-xs text-gray-400">
+                    {subscription.subscribersCount || 0} subscribers
+                  </span>
                 </div>
               </div>
-              <div>
-                <button
-                  className={`w-27 flex items-center justify-center px-4 py-2 rounded-full font-medium transition-colors ${
-                    subscribedState[subscription._id]
-                      ? "border-[#272727] border text-white"
-                      : "bg-white text-black"
-                  }`}
-                  onClick={() => handleSubscribe(subscription)}
-                >
-                  {subscribedState[subscription._id]
-                    ? "Subscribed"
-                    : "Subscribe"}
-                </button>
-              </div>
+
+              {/* Button */}
+              <button
+                className={`text-xs md:text-base px-3 py-1.5 md:px-4 md:py-2 rounded-full font-medium transition-colors shrink-0 ${
+                  subscribedState[subscription._id]
+                    ? "border border-[#272727] text-white"
+                    : "bg-white text-black"
+                }`}
+                onClick={() => handleSubscribe(subscription)}
+              >
+                {subscribedState[subscription._id] ? "Subscribed" : "Subscribe"}
+              </button>
             </div>
           ))}
         </div>
