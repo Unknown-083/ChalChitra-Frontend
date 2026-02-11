@@ -13,25 +13,29 @@ import { toggleSubscribe } from "../utils/toggleLikeSubscribe.js";
 import { formatDate } from "../utils/helpers.js";
 import Videos from "../components/Videos.jsx";
 import { formatVideoData } from "../utils/helpers.js";
-import Header from "../components/Header/Header.jsx";
+import MainLayout from "../layout/MainLayout";
 
 const Channel = () => {
   const [activeTab, setActiveTab] = useState("videos");
   const [isSubscribed, setIsSubscribed] = useState(false);
-  const [channelData, setChannelData] = useState([]);
+  const [channelData, setChannelData] = useState({});
   const [videos, setVideos] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
 
   const { id } = useParams();
 
   useEffect(() => {
     const fetchChannelData = async () => {
       try {
+        setIsLoading(true);
         const { data } = await axios.get(`api/v1/users/c/${id}`);
-        setChannelData(data.data);
-        setIsSubscribed(data.data.isSubscribed);
-        setVideos(data.data.videos.map(formatVideoData));
+        setChannelData(data.data || {});
+        setIsSubscribed(data.data?.isSubscribed);
+        setVideos((data.data?.videos || []).map(formatVideoData));
       } catch (error) {
         console.error("Error fetching channel data:", error);
+      } finally {
+        setIsLoading(false);
       }
     };
 
@@ -64,8 +68,7 @@ const Channel = () => {
   };
 
   return (
-    <div>
-      <Header />
+    <MainLayout isLoading={isLoading}>
       <div className="min-h-screen">
         {/* Cover Image */}
         <div className="h-48 md:h-64 relative overflow-hidden">
@@ -77,7 +80,7 @@ const Channel = () => {
         </div>
 
         {/* Channel Header */}
-        <div className="max-w-7xl mx-auto px-6 -mt-16 relative z-10">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 md:px-8 -mt-16 relative z-10">
           <div className="flex flex-col md:flex-row items-start md:items-end gap-6 mb-6">
             {/* Avatar */}
             <div className="w-32 h-32 bg-gradient-to-br from-teal-600 to-teal-800 rounded-full flex items-center justify-center text-5xl font-bold border-4 border-black">
@@ -142,7 +145,7 @@ const Channel = () => {
                     </div>
                     <div>
                       <p className="text-xs text-gray-400">{stat.label}</p>
-                      <p className="text-lg font-bold text-white">
+                      <p className="sm-text-lg text-xs font-bold text-white">
                         {stat.value}
                       </p>
                     </div>
@@ -265,8 +268,8 @@ const Channel = () => {
             </div>
           )}
         </div>
-      </div>
-    </div>
+      </div>    
+      </MainLayout>
   );
 };
 

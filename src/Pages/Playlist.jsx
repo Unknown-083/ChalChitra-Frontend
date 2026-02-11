@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import Header from "../components/Header/Header";
+import MainLayout from "../layout/MainLayout";
 import { useNavigate, useParams } from "react-router-dom";
 import axios from "../utils/axios";
 import Videos from "../components/Videos";
@@ -11,6 +11,7 @@ import EditPlaylistPopup from "../components/PlaylistPopup";
 const Playlist = () => {
   const { id } = useParams();
   const [playlistData, setPlaylistData] = React.useState({});
+  const [isLoading, setIsLoading] = React.useState(true);
   const [EditPopupOpen, setEditPopupOpen] = React.useState(false);
   const [AddVideoPopupOpen, setAddVideoPopupOpen] = React.useState(false);
   const [allVideos, setAllVideos] = React.useState([]);
@@ -23,9 +24,15 @@ const Playlist = () => {
   useEffect(() => {
     // Any side effects or data fetching can be done here
     const fetchPlaylistData = async () => {
-      // Fetch playlist data based on ID from params
-      const { data } = await axios.get(`/api/v1/playlists/${id}`);
-      setPlaylistData(data.data);
+      try {
+        setIsLoading(true);
+        const { data } = await axios.get(`/api/v1/playlists/${id}`);
+        setPlaylistData(data.data || {});
+      } catch (err) {
+        console.error("Error fetching playlist:", err);
+      } finally {
+        setIsLoading(false);
+      }
     };
 
     fetchPlaylistData();
@@ -48,44 +55,42 @@ const Playlist = () => {
   }, [AddVideoPopupOpen]);
 
   const handleAddVideosToPlaylist = async () => {
-  try {
-    await Promise.all(
-      selectedVideos.map((videoId) =>
-        axios.post(`/api/v1/playlists/${id}/videos/${videoId}`)
-      )
-    );
-
-    setPlaylistData((prev) => ({
-      ...prev,
-      videos: [
-        ...prev.videos,
-        ...allVideos.filter(
-          (video) =>
-            selectedVideos.includes(video._id) &&
-            !prev.videos.some((v) => v._id === video._id)
+    try {
+      await Promise.all(
+        selectedVideos.map((videoId) =>
+          axios.post(`/api/v1/playlists/${id}/videos/${videoId}`),
         ),
-      ],
-    }));
+      );
 
-    setSelectedVideos([]);
-    setAddVideoPopupOpen(false);
-  } catch (err) {
-    console.error(err);
-  }
-};
+      setPlaylistData((prev) => ({
+        ...prev,
+        videos: [
+          ...prev.videos,
+          ...allVideos.filter(
+            (video) =>
+              selectedVideos.includes(video._id) &&
+              !prev.videos.some((v) => v._id === video._id),
+          ),
+        ],
+      }));
 
+      setSelectedVideos([]);
+      setAddVideoPopupOpen(false);
+    } catch (err) {
+      console.error(err);
+    }
+  };
 
   return (
-    <div>
-      <Header />
-      <div className="flex px-4 py-2">
-        <div className="w-1/3 p-4 rounded-2xl bg-[#272727]">
+    <MainLayout isLoading={isLoading}>
+      <div className="flex flex-col md:flex-row px-4 py-2 gap-4">
+        <div className="w-full md:w-1/3 p-4 mt-2 rounded-2xl bg-[#272727]">
           {/* Owner */}
           <div className="flex items-center mb-4">
             <img
               src={playlistData?.owner?.avatar?.url}
               alt={playlistData?.owner?.fullname}
-              className="w-25 h-25 rounded-full mr-4"
+              className="w-20 h-20 md:w-24 md:h-24 rounded-full mr-4 object-cover"
             />
             <div>
               <h3 className="text-2xl font-semibold">
@@ -124,15 +129,17 @@ const Playlist = () => {
             >
               {<Plus />}
             </div>
-            {(playlistData.name!="Watch Later") && (<div
-              className="p-2 cursor-pointer rounded-full border border-white hover:bg-white hover:text-black"
-              onClick={() => setEditPopupOpen(true)}
-            >
-              <Pencil />
-            </div>)}
+            {playlistData.name != "Watch Later" && (
+              <div
+                className="p-2 cursor-pointer rounded-full border border-white hover:bg-white hover:text-black"
+                onClick={() => setEditPopupOpen(true)}
+              >
+                <Pencil />
+              </div>
+            )}
           </div>
         </div>
-        <div className="w-2/3 p-4">
+        <div className="w-full md:w-2/3 p-0 md:p-4">
           <h2 className="text-2xl font-bold mb-4">Videos in Playlist</h2>
           <ul>
             {playlistData?.videos?.length > 0 && (
@@ -319,8 +326,7 @@ const Playlist = () => {
           </div>
         </div>
       )}
-
-    </div>
+    </MainLayout>
   );
 };
 

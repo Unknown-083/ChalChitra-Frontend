@@ -93,7 +93,7 @@ const Homepage = () => {
                 className={`
                   px-3 sm:px-4 py-1 sm:py-2 
                   rounded-lg sm:rounded-xl 
-                  text-xs sm:text-sm 
+                  text-sm 
                   font-medium transition-all 
                   whitespace-nowrap flex-shrink-0
                   ${

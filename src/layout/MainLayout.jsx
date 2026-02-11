@@ -14,7 +14,7 @@ const MainLayout = ({ children, isLoading }) => {
         <SideNav />
 
         {/* Page Content */}
-        <main className="w-full lg:px-2 lg:ml-12 pb-20 lg:pb-6 overflow-hidden min-w-0">
+        <main className="w-full lg:px-2 lg:ml-12 xl:ml-14 pb-20 lg:pb-6 overflow-hidden min-w-0">
           {isLoading ? (
             <div className="h-[calc(100vh-3.5rem)] flex items-center justify-center">
               <Loading />
