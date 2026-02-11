@@ -1,10 +1,12 @@
-import { useRef, useState } from "react";
-import Header from "../components/Header/Header.jsx";
-import SideNav from "../components/Header/SideNav.jsx";
+import { useRef, useState, useEffect } from "react";
+import MainLayout from "../layout/MainLayout.jsx";
 import Videos from "../components/Videos.jsx";
+import { useSelector } from "react-redux";
 
 const Homepage = () => {
   const [activeCategory, setActiveCategory] = useState("All");
+  const [isLoading, setIsLoading] = useState(true);
+  const videos = useSelector((state) => state.video.videos);
 
   const categories = [
     "All",
@@ -26,6 +28,13 @@ const Homepage = () => {
 
   const scrollRef = useRef(null);
   const animationRef = useRef(null);
+
+  useEffect(() => {
+    // Check if videos are loaded
+    if (videos !== null && videos !== undefined) {
+      setIsLoading(false);
+    }
+  }, [videos]);
 
   const handleMouseMove = (e) => {
     const container = scrollRef.current;
@@ -61,18 +70,11 @@ const Homepage = () => {
   };
   
   return (
-    <div className="font-sans min-h-screen text-white bg-[#0f0f0f] overflow-x-hidden">
-      {/* Header */}
-      <Header />
-
-      {/* SideNav */}
-      <SideNav />
-
-      {/* Main Container */}
-      <div className="pt-14 sm:pt-16 md:pt-[70px] lg:pl-18">
+    <MainLayout isLoading={isLoading}>
+      <div className="font-sans">
         {/* Category Navigation - Fixed on Desktop, Sticky on Mobile */}
         <nav 
-          className="sticky lg:fixed top-14 sm:top-16  
+          className="lg:fixed sm:top-16 md:top-[65px] 
                      left-0 lg:left-16 xl:left-18 right-0 z-30
                      bg-[#0f0f0f] border-b border-[#272727]
                      px-3 sm:px-4 md:px-6 py-3"
@@ -108,24 +110,24 @@ const Homepage = () => {
         </nav>
 
         {/* Main Content */}
-        <main className="sm:px-4 md:px-5 lg:px-3 
-                        pt-5 sm:pt-6 lg:pt-[70px]
+        <main className="sm:px-4 md:px-5 lg:px-6 xl:px-8 
+                        sm:pt-6 lg:pt-[78px]
                         pb-20 lg:pb-8
                         w-full max-w-[2000px] mx-auto">
           <Videos activeCategory={activeCategory} />
         </main>
-      </div>
 
-      <style jsx>{`
-        .scrollbar-hide::-webkit-scrollbar {
-          display: none;
-        }
-        .scrollbar-hide {
-          -ms-overflow-style: none;
-          scrollbar-width: none;
-        }
-      `}</style>
-    </div>
+        <style jsx>{`
+          .scrollbar-hide::-webkit-scrollbar {
+            display: none;
+          }
+          .scrollbar-hide {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+          }
+        `}</style>
+      </div>
+    </MainLayout>
   );
 };
 

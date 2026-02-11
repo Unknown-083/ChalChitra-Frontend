@@ -10,6 +10,7 @@ import MainLayout from "../layout/MainLayout.jsx";
 const Subscription = () => {
   const navigate = useNavigate();
   const [videos, setVideos] = React.useState([]);
+  const [isLoading, setIsLoading] = React.useState(true);
 
   useEffect(() => {
     const fetchSubscriptionVideos = async () => {
@@ -17,8 +18,9 @@ const Subscription = () => {
         const { data } = await axios.get(
           `/api/v1/subscriptions/get-subscription-videos`
         );
-
+        
         data?.data && setVideos(data.data.map(formatVideoData));
+        setIsLoading(false);
       } catch (error) {
         console.error("Error fetching subscription videos:", error);
       }
@@ -27,7 +29,7 @@ const Subscription = () => {
   }, []);
 
   return (
-    <MainLayout>
+    <MainLayout isLoading={isLoading}>
       <Header />
 
       <div className="flex w-full">

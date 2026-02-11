@@ -1,10 +1,10 @@
-import React from "react";
 import Header from "../components/Header/Header.jsx";
 import SideNav from "../components/Header/SideNav.jsx";
+import Loading from "../components/Loading.jsx";
 
-const MainLayout = ({ children }) => {
+const MainLayout = ({ children, isLoading }) => {
   return (
-    <div className="min-h-screen text-white ">
+    <div className="min-h-screen bg-[#0f0f0f] text-white overflow-x-hidden">
       {/* Fixed Header */}
       <Header />
 
@@ -14,8 +14,14 @@ const MainLayout = ({ children }) => {
         <SideNav />
 
         {/* Page Content */}
-        <main className="w-full lg:px-2 lg:ml-12 mb-20">
-          {children}
+        <main className="w-full lg:px-2 lg:ml-12 pb-20 lg:pb-6 overflow-hidden min-w-0">
+          {isLoading ? (
+            <div className="h-[calc(100vh-3.5rem)] flex items-center justify-center">
+              <Loading />
+            </div>
+          ) : (
+            children
+          )}
         </main>
       </div>
     </div>
