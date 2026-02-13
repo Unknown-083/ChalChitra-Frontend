@@ -8,13 +8,14 @@ const Input = ({
   value,
   bgColor = "",
   textColor = "text-white",
+  flexCol = true,
   ...props
 }, ref) => {
   const id = useId();
 
   return (
-    <div className="flex flex-col w-full">
-      {label && <label htmlFor={id} className="text-sm mb-1">{label}</label>}
+    <div className={`flex ${flexCol ? "flex-col" : "items-center gap-3"} w-full`}>
+      {label && <label htmlFor={id} className="text-md mb-1 font-bold">{label}</label>}
       <input
         type={type}
         placeholder={placeholder}

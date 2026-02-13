@@ -3,26 +3,31 @@ import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import axios from "../utils/axios";
 import PlaylistPopup from "./PlaylistPopup";
+import Loading from "./Loading";
 
 const Playlists = ({ grid = true }) => {
-  const [playlists, setPlaylists] = useState([]);
   const navigate = useNavigate();
   const [playlistId, setPlaylistId] = useState(null);
   const [playlistPopup, setPlaylistPopup] = useState(false);
-  const [playlistData, setPlaylistData] = useState(null);
+  const [playlists, setPlaylists] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const getUserPlaylists = async () => {
       try {
+        setIsLoading(true);
         const { data } = await axios.get("/api/v1/playlists");
         setPlaylists(data.data || []);
         // Handle playlists data as needed
       } catch (error) {
         console.error("Error fetching user playlists:", error);
+      } finally {
+        setIsLoading(false);
       }
     };
     getUserPlaylists();
   }, []);
+  if (isLoading && playlists === null) return <Loading />;
 
   return (
     <div
@@ -75,7 +80,6 @@ const Playlists = ({ grid = true }) => {
                     e.stopPropagation();
                     setPlaylistPopup(true);
                     setPlaylistId(playlist._id);
-                    setPlaylistData(playlist);
                   }}
                 />)}
               </h3>

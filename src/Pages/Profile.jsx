@@ -5,6 +5,7 @@ import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import Playlists from "../components/Playlists.jsx";
 import { setWatchLater } from "../auth/videoSlice.js";
+import EditProfilePopup from "../components/EditProfilePopup.jsx";
 
 const Profile = () => {
   const user = useSelector((state) => state.auth.userData);
@@ -13,6 +14,7 @@ const Profile = () => {
   const { watchLater } = useSelector((state) => state.video);
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(true);
+  const [profilePopup, setProfilePopup] = useState(false);
 
   useEffect(() => {
     // Simulate data loading
@@ -28,16 +30,17 @@ const Profile = () => {
       <div className="w-full min-w-0 overflow-hidden">
         <div className="px-3 sm:px-4 md:px-6 lg:px-8 py-4 sm:py-6 pb-20 lg:pb-8 w-full max-w-[2000px] mx-auto">
           {/* User Info */}
-          <div className="flex flex-col sm:flex-row items-center sm:items-start gap-4 sm:gap-6 mb-6 sm:mb-8">
+          <div className="flex flex-col sm:flex-row items-center gap-4 sm:gap-6 mb-6 sm:mb-8">
             <div className="w-24 h-24 sm:w-28 sm:h-28 md:w-32 md:h-32 lg:w-36 lg:h-36 flex-shrink-0">
               <img
                 src={user?.avatar?.url}
                 alt={user?.fullname}
-                className="rounded-full w-full h-full object-cover bg-gradient-to-br from-teal-600 to-green-800"
+                className="rounded-full w-full h-full object-cover  hover:brightness-90 transition-all cursor-pointer"
                 onError={(e) => {
                   e.target.style.display = 'none';
                   e.target.nextSibling.style.display = 'flex';
                 }}
+                onClick={() => setProfilePopup(true)}
               />
               <div 
                 className="rounded-full w-full h-full bg-gradient-to-br from-teal-600 to-green-800 hidden items-center justify-center text-4xl sm:text-5xl font-bold"
@@ -166,6 +169,8 @@ const Profile = () => {
           </div>
         </div>
       </div>
+
+      {profilePopup && <EditProfilePopup setEditProfilePopup={setProfilePopup} />}
 
       <style jsx>{`
         .scrollbar-hide::-webkit-scrollbar {

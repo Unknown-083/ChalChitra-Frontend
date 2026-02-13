@@ -9,7 +9,11 @@ const CommentsSection = ({ inPopup = false, comments, setComments, id }) => {
   const [isInputFocused, setIsInputFocused] = useState(false);
   const [comment, setComment] = useState("");
   const user = useSelector((state) => state.auth.userData);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [likingIds, setLikingIds] = useState([]);
   const addComment = async () => {
+    if (!comment.trim() || isSubmitting) return;
+    setIsSubmitting(true);
     try {
       const { data } = await axios.post(`/api/v1/comments/${id}`, {
         content: comment,
@@ -23,12 +27,16 @@ const CommentsSection = ({ inPopup = false, comments, setComments, id }) => {
       setComment("");
     } catch (error) {
       console.error("Video :: addComment :: Error adding comment:", error);
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
   const toggleCommentLike = async (commentId) => {
+    if (likingIds.includes(commentId)) return;
+    setLikingIds((prev) => [...prev, commentId]);
     try {
-      await axios.post(`api/v1/likes/toggle/c/${commentId}`);
+      await axios.post(`/api/v1/likes/toggle/c/${commentId}`);
 
       setComments((prev) => ({
         ...prev,
@@ -51,6 +59,8 @@ const CommentsSection = ({ inPopup = false, comments, setComments, id }) => {
         "Video :: toggleCommentLike :: Error liking comment:",
         error,
       );
+    } finally {
+      setLikingIds((prev) => prev.filter((i) => i !== commentId));
     }
   };
 
@@ -82,7 +92,7 @@ const CommentsSection = ({ inPopup = false, comments, setComments, id }) => {
                 ? "bg-white text-black font-medium hover:bg-gray-200"
                 : "bg-[#272727] text-gray-400 cursor-not-allowed"
             }`}
-            disabled={!comment.trim()}
+            disabled={!comment.trim() || isSubmitting}
             onClick={addComment}
           >
             Comment
@@ -116,6 +126,8 @@ const CommentsSection = ({ inPopup = false, comments, setComments, id }) => {
                   <button
                     className="flex items-center gap-1 group"
                     onClick={() => toggleCommentLike(comment?._id)}
+                    disabled={likingIds.includes(comment?._id)}
+                    aria-disabled={likingIds.includes(comment?._id)}
                   >
                     <ThumbsUp
                       className={`w-4 h-4 transition-colors ${

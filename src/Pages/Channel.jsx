@@ -1,11 +1,11 @@
 import { useEffect, useState } from "react";
 import {
   Share2,
-  MoreVertical,
   Eye,
   Calendar,
   Users,
   Video,
+  Pencil,
 } from "lucide-react";
 import { useParams } from "react-router-dom";
 import axios from "../utils/axios.js";
@@ -14,6 +14,8 @@ import { formatDate } from "../utils/helpers.js";
 import Videos from "../components/Videos.jsx";
 import { formatVideoData } from "../utils/helpers.js";
 import MainLayout from "../layout/MainLayout";
+import { useSelector } from "react-redux";
+import EditProfilePopup from "../components/EditProfilePopup.jsx";
 
 const Channel = () => {
   const [activeTab, setActiveTab] = useState("videos");
@@ -21,8 +23,10 @@ const Channel = () => {
   const [channelData, setChannelData] = useState({});
   const [videos, setVideos] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [editProfilePopup, setEditProfilePopup] = useState(false);
 
   const { id } = useParams();
+  const user = useSelector((state) => state.auth.userData);
 
   useEffect(() => {
     const fetchChannelData = async () => {
@@ -41,7 +45,7 @@ const Channel = () => {
 
     fetchChannelData();
   }, [id]);
-  
+
   const stats = [
     { icon: Users, label: "Subscribers", value: channelData.subscribersCount },
     { icon: Video, label: "Videos", value: channelData.totalVideos },
@@ -86,8 +90,11 @@ const Channel = () => {
             <div className="w-32 h-32 bg-gradient-to-br from-teal-600 to-teal-800 rounded-full flex items-center justify-center text-5xl font-bold border-4 border-black">
               <img
                 src={channelData?.avatar?.url}
-                className="w-full h-full rounded-full object-cover"
+                className="w-full h-full rounded-full object-cover hover:brightness-90 transition-all cursor-pointer"
                 alt=""
+                onClick={() => {
+                  if(user?._id === channelData._id) setEditProfilePopup(true)
+                }}
               />
             </div>
 
@@ -124,9 +131,14 @@ const Channel = () => {
                 <Share2 className="w-5 h-5" />
               </button>
 
-              <button className="p-2 bg-[#272727] hover:bg-[#3a3a3a] rounded-full transition-all">
-                <MoreVertical className="w-5 h-5" />
-              </button>
+              {user?._id === channelData._id && (
+                <button className="p-2 bg-[#272727] hover:bg-[#3a3a3a] rounded-full transition-all">
+                  <Pencil
+                    className="w-5 h-5"
+                    onClick={() => setEditProfilePopup(true)}
+                  />
+                </button>
+              )}
             </div>
           </div>
 
@@ -268,8 +280,12 @@ const Channel = () => {
             </div>
           )}
         </div>
-      </div>    
-      </MainLayout>
+      </div>
+
+      {editProfilePopup && (
+        <EditProfilePopup setEditProfilePopup={setEditProfilePopup} />
+      )}
+    </MainLayout>
   );
 };
 
