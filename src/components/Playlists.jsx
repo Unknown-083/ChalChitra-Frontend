@@ -10,6 +10,7 @@ const Playlists = ({ grid = true }) => {
   const [playlistId, setPlaylistId] = useState(null);
   const [playlistPopup, setPlaylistPopup] = useState(false);
   const [playlists, setPlaylists] = useState(null);
+  const [playlistData, setPlaylistData] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {

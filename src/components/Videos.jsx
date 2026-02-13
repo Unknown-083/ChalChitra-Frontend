@@ -16,6 +16,7 @@ const Videos = ({
   const [videos, setVideos] = useState(null);
   const [videoMenuPopup, setVideoMenuPopup] = useState(false);
   const [videoId, setVideoId] = useState(null);
+  const [ownerId, setOwnerId] = useState(null);
 
   const localVideos = useSelector((state) => state.video.videos);
 
@@ -146,6 +147,7 @@ const Videos = ({
                 onClick={(e) => {
                   e.stopPropagation();
                   setVideoId(video.id);
+                  setOwnerId(video.channelId);
                   setVideoMenuPopup(true);
                 }}
               />
@@ -158,6 +160,7 @@ const Videos = ({
       {videoMenuPopup && (
         <VideoMenuPopup
           videoId={videoId}
+          ownerId={ownerId}
           playlistId={playlistId}
           playlistName={playlistName}
           setVideoMenuPopup={setVideoMenuPopup}
