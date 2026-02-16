@@ -76,7 +76,7 @@ const Playlists = ({ grid = true }) => {
               <h3 className="text-lg flex justify-between items-center">
                 {playlist.name}
                 {(playlist.name!="Watch Later") && (<MoreVertical
-                  className="w-5 h-5 text-gray-400 hover:text-white cursor-pointer transition-colors opacity-0 group-hover:opacity-100 drop-shadow-sm"
+                  className="w-5 h-5 lg:text-gray-400 text-white hover:text-white cursor-pointer transition-colors lg:opacity-0 group-hover:opacity-100 drop-shadow-sm"
                   onClick={(e) => {
                     e.stopPropagation();
                     setPlaylistPopup(true);

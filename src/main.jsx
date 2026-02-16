@@ -23,6 +23,7 @@ import AllPlaylists from "./Pages/AllPlaylists.jsx";
 import Playlist from "./Pages/Playlist.jsx";
 import History from "./Pages/History.jsx";
 import LikedVideos from "./Pages/LikedVideos.jsx";
+import Tweet from "./Pages/Tweet.jsx";
 
 const router = createBrowserRouter(
   createRoutesFromElements([
@@ -40,6 +41,7 @@ const router = createBrowserRouter(
       <Route path="playlists/:id" element={<Playlist />} />
       <Route path="history" element={<History/>}/>
       <Route path="liked-videos" element={<LikedVideos/>}/>
+      <Route path="tweets" element={<Tweet/>}/>
     </Route>,
   ])
 );

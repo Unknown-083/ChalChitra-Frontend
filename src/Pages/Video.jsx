@@ -52,7 +52,7 @@ const Video = () => {
 
   useEffect(() => {
     const getComments = async () => {
-      const { data } = await axios.get(`/api/v1/comments/${id}`);
+      const { data } = await axios.get(`/api/v1/comments/v/${id}`);
       setComments(data.data);
     };
     getComments();

@@ -1,4 +1,4 @@
-import { HomeIcon, User, LogOut } from "lucide-react";
+import { HomeIcon, User, LogOut, Twitter } from "lucide-react";
 import { useNavigate, useLocation } from "react-router-dom";
 import axios from "../../utils/axios.js";
 import { useDispatch } from "react-redux";
@@ -52,6 +52,13 @@ const SideNav = () => {
       hoverColor: "hover:bg-[#272727]",
     },
     {
+      icon: <Twitter className="w-5 h-5 sm:w-6 sm:h-6" />,
+      label: "Tweets",
+      path: "/tweets",
+      onClick: () => navigate("/tweets"),
+      hoverColor: "hover:bg-[#272727]",
+    },
+    {
       icon: <User className="w-5 h-5 sm:w-6 sm:h-6" />,
       label: "Profile",
       path: "/profile",
@@ -63,7 +70,7 @@ const SideNav = () => {
       label: "Logout",
       path: null,
       onClick: handleLogout,
-      hoverColor: "hover:bg-[#db0202] hover:border-[#db0202]",
+      hoverColor: "hover:bg-[#db0202] hover:border-[#db0202] hover:text-white",
     },
   ];
 
@@ -139,6 +146,7 @@ const SideNav = () => {
                         : `border border-[#272727] text-white ${item.hoverColor}`
                     }
                     active:scale-95
+                    ${item.label === "Logout" ? "border-[#db0202] bg-[#db0202]" : ""}
                   `}
                 >
                   {item.icon}

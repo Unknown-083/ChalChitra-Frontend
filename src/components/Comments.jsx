@@ -5,17 +5,21 @@ import Input from "./Input.jsx";
 import { timeAgo } from "../utils/helpers.js";
 import { useSelector } from "react-redux";
 
-const CommentsSection = ({ inPopup = false, comments, setComments, id }) => {    
+const CommentsSection = ({ inPopup = false, comments, setComments, id, type = "v" }) => {    
   const [isInputFocused, setIsInputFocused] = useState(false);
   const [comment, setComment] = useState("");
   const user = useSelector((state) => state.auth.userData);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [likingIds, setLikingIds] = useState([]);
+  
+  // Debug log to check the data structure
+  console.log("Comments data structure:", comments);
+  
   const addComment = async () => {
     if (!comment.trim() || isSubmitting) return;
     setIsSubmitting(true);
     try {
-      const { data } = await axios.post(`/api/v1/comments/${id}`, {
+      const { data } = await axios.post(`/api/v1/comments/${type}/${id}`, {
         content: comment,
       });
 
@@ -26,7 +30,7 @@ const CommentsSection = ({ inPopup = false, comments, setComments, id }) => {
       }));
       setComment("");
     } catch (error) {
-      console.error("Video :: addComment :: Error adding comment:", error);
+      console.error("Comments :: addComment :: Error adding comment:", error);
     } finally {
       setIsSubmitting(false);
     }
@@ -56,7 +60,7 @@ const CommentsSection = ({ inPopup = false, comments, setComments, id }) => {
       }));
     } catch (error) {
       console.error(
-        "Video :: toggleCommentLike :: Error liking comment:",
+        "Comments :: toggleCommentLike :: Error liking comment:",
         error,
       );
     } finally {
@@ -64,10 +68,14 @@ const CommentsSection = ({ inPopup = false, comments, setComments, id }) => {
     }
   };
 
+  // Handle different data structures
+  const commentsList = comments?.comments || [];
+  const totalComments = comments?.totalComments || 0;
+
   return (
     <div className={inPopup ? "" : "mt-4 sm:mt-6"}>
       <h2 className="text-lg sm:text-xl font-bold mb-3 sm:mb-4">
-        {comments?.totalComments || 0} Comments
+        {totalComments} Comments
       </h2>
 
       {/* Add Comment */}
@@ -102,8 +110,8 @@ const CommentsSection = ({ inPopup = false, comments, setComments, id }) => {
 
       {/* Comments List */}
       <div className="flex flex-col gap-4">
-        {comments && comments.comments.length > 0 ? (
-          comments.comments.map((comment) => (
+        {commentsList && commentsList.length > 0 ? (
+          commentsList.map((comment) => (
             <div key={comment?._id} className="flex gap-3">
               <img
                 src={comment?.owner?.avatar?.url || user?.avatar?.url}
@@ -148,7 +156,17 @@ const CommentsSection = ({ inPopup = false, comments, setComments, id }) => {
           </p>
         )}
       </div>
+      <style jsx>{`
+        .scrollbar-hide::-webkit-scrollbar {
+          display: none;
+        }
+        .scrollbar-hide {
+          -ms-overflow-style: none;
+          scrollbar-width: none;
+        }
+      `}</style>
     </div>
+    
   );
 };
 
