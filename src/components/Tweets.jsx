@@ -94,7 +94,7 @@ const Tweets = () => {
 
   const fetchTweetComments = async (tweetId) => {
     try {
-      const { data } = await axios.get(`/api/v1/comments/tweet/${tweetId}`);
+      const { data } = await axios.get(`/api/v1/comments/t/${tweetId}`);
       setCurrentComments(data.data || []);
     } catch (error) {
       console.error("Error fetching tweet comments:", error);
