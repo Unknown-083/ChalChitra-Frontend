@@ -7,11 +7,15 @@ import {
   ThumbsUp,
   User,
   History,
+  LogOut,
 } from "lucide-react";
 import Logo from "./Logo";
 import { useSelector } from "react-redux";
 import { fetchSubscriptions } from "../../utils/getSubscriptions.js";
 import { useNavigate } from "react-router-dom";
+import axios from "../../utils/axios.js";
+import { logout as authLogout } from "../../auth/authSlice";
+
 
 const SideNavPopUp = ({ closeSideNav }) => {
   const [isClosing, setIsClosing] = useState(false);
@@ -34,9 +38,9 @@ const SideNavPopUp = ({ closeSideNav }) => {
     setTimeout(closeSideNav, 300);
   };
 
-  const NavItem = ({ icon: Icon, label, onClick }) => (
+  const NavItem = ({ icon: Icon, label, onClick, classname = "" }) => (
     <button
-      className="flex items-center gap-5 px-3 py-2 cursor-pointer rounded-lg hover:bg-[#272727] transition-colors"
+      className={`flex items-center gap-5 px-3 py-2 cursor-pointer rounded-lg hover:bg-[#272727] transition-colors ${classname}`}
       onClick={onClick}
     >
       <Icon className="w-6 h-6" />
@@ -56,6 +60,22 @@ const SideNavPopUp = ({ closeSideNav }) => {
       <span className="text-md truncate">{name.fullname}</span>
     </button>
   );
+  
+  const handleLogout = () => {
+    axios
+      .post("/api/v1/users/logout")
+      .then((res) => {
+        console.log("Logged out", res);
+        dispatch(authLogout());
+        navigate("/login");
+      })
+      .catch((err) => {
+        console.error(
+          "Logout error:",
+          err.response ? err.response.data : err.message
+        );
+      });
+  };
 
   return (
     <>
@@ -166,6 +186,15 @@ const SideNavPopUp = ({ closeSideNav }) => {
               label="Liked Videos"
               onClick={() => {
                 navigate("/liked-videos");
+                closeSideNav();
+              }}
+            />
+            <NavItem
+              icon={LogOut}
+              label="Logout"
+              classname="text-red-500 hover:text-red-400"
+              onClick={() => {
+                handleLogout();
                 closeSideNav();
               }}
             />

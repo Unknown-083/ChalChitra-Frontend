@@ -1,29 +1,12 @@
-import { HomeIcon, User, LogOut, Twitter } from "lucide-react";
+import { HomeIcon, User, Twitter } from "lucide-react";
 import { useNavigate, useLocation } from "react-router-dom";
-import axios from "../../utils/axios.js";
 import { useDispatch } from "react-redux";
-import { logout as authLogout } from "../../auth/authSlice";
 
 const SideNav = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const dispatch = useDispatch();
 
-  const handleLogout = () => {
-    axios
-      .post("/api/v1/users/logout")
-      .then((res) => {
-        console.log("Logged out", res);
-        dispatch(authLogout());
-        navigate("/login");
-      })
-      .catch((err) => {
-        console.error(
-          "Logout error:",
-          err.response ? err.response.data : err.message
-        );
-      });
-  };
 
   const navItems = [
     {
@@ -64,13 +47,6 @@ const SideNav = () => {
       path: "/profile",
       onClick: () => navigate("/profile"),
       hoverColor: "hover:bg-[#272727]",
-    },
-    {
-      icon: <LogOut className="w-5 h-5 sm:w-6 sm:h-6" />,
-      label: "Logout",
-      path: null,
-      onClick: handleLogout,
-      hoverColor: "hover:bg-[#db0202] hover:border-[#db0202] hover:text-white",
     },
   ];
 

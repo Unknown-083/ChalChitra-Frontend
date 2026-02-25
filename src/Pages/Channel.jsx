@@ -16,12 +16,14 @@ import { formatVideoData } from "../utils/helpers.js";
 import MainLayout from "../layout/MainLayout";
 import { useSelector } from "react-redux";
 import EditProfilePopup from "../components/EditProfilePopup.jsx";
+import Tweets from "../components/Tweets.jsx";
 
 const Channel = () => {
   const [activeTab, setActiveTab] = useState("videos");
   const [isSubscribed, setIsSubscribed] = useState(false);
   const [channelData, setChannelData] = useState({});
   const [videos, setVideos] = useState([]);
+  const [tweets, setTweets] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [editProfilePopup, setEditProfilePopup] = useState(false);
 
@@ -43,7 +45,19 @@ const Channel = () => {
       }
     };
 
+    const fetchTweets = async () => {
+      try {
+        const { data } = await axios.get(`/api/v1/tweets/${id}`);
+        console.log(data);
+        
+        setTweets(data.data || []);
+      } catch (error) {
+        console.error("Error fetching tweets:", error);
+      }
+    };
+
     fetchChannelData();
+    fetchTweets();
   }, [id]);
 
   const stats = [
@@ -170,7 +184,7 @@ const Channel = () => {
           {/* Tabs */}
           <div className="border-b border-[#272727] mb-6">
             <div className="flex gap-8">
-              {["videos", "about"].map((tab) => (
+              {["videos", "tweets", "about"].map((tab) => (
                 <button
                   key={tab}
                   onClick={() => setActiveTab(tab)}
@@ -196,6 +210,12 @@ const Channel = () => {
               <div className="mb-12">
                 <Videos videoArray={videos} grid="false" />
               </div>
+            </div>
+          ) 
+          
+          : activeTab === "tweets" ? (
+            <div className="mb-12">
+              <Tweets userTweets={tweets} />
             </div>
           ) : (
             // About Tab

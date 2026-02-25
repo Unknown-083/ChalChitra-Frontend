@@ -18,9 +18,9 @@ import { useNavigate } from "react-router-dom";
 import Loading from "./Loading";
 import CommentsSection from "./Comments";
 
-const Tweets = () => {
-  const [tweets, setTweets] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
+const Tweets = ({userTweets} = {}) => {
+  const [tweets, setTweets] = useState(userTweets || []);
+  const [isLoading, setIsLoading] = useState(false);
   const [newTweet, setNewTweet] = useState("");
   const [isPosting, setIsPosting] = useState(false);
   const [editingTweetId, setEditingTweetId] = useState(null);
@@ -42,7 +42,7 @@ const Tweets = () => {
   const fileInputRef = useRef(null);
 
   useEffect(() => {
-    fetchTweets();
+    !tweets.length && fetchTweets();
   }, []);
 
   // Close menu when clicking outside
@@ -277,6 +277,7 @@ const Tweets = () => {
               src={user?.avatar?.url || "/default-avatar.png"}
               alt={user?.fullname}
               className="w-9 h-9 md:w-10 md:h-10 rounded-full flex-shrink-0 object-cover bg-gradient-to-br from-teal-600 to-green-800"
+              onClick={() => navigate("/channel/" + user?._id)}
             />
             <div className="flex-1 min-w-0">
               <textarea
@@ -595,7 +596,7 @@ const Tweets = () => {
 
             {/* Modal */}
             <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-              <div className="w-full max-w-2xl max-h-[90vh] bg-[#0f0f0f] rounded-2xl border border-[#272727] shadow-2xl flex flex-col overflow-hidden">
+              <div className="w-full max-w-2xl max-h-[75vh] md:max-h-[90vh] bg-[#0f0f0f] rounded-2xl border border-[#272727] shadow-2xl flex flex-col overflow-hidden">
                 {/* Modal Header */}
                 <div className="flex items-center justify-between p-4 md:p-5 border-b border-[#272727]">
                   <h3 className="text-lg md:text-xl font-bold">Comments</h3>
@@ -638,14 +639,14 @@ const Tweets = () => {
                 )}
 
                 {/* Comments Section */}
-                <div className="flex-1 overflow-y-auto">
+                <div className="flex-1 overflow-y-auto custom-scrollbar">
                   <div className="p-4 md:p-5">
                     <CommentsSection
                       inPopup={true}
                       comments={currentComments}
                       setComments={setCurrentComments}
                       id={currentTweetId}
-                      type="tweet"
+                      type="t"
                     />
                   </div>
                 </div>
