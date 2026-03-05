@@ -74,7 +74,7 @@ const Homepage = () => {
       <div className="font-sans">
         {/* Category Navigation - Fixed on Desktop, Sticky on Mobile */}
         <nav 
-          className="lg:fixed sm:top-16 md:top-[65px] 
+          className="relative lg:fixed sm:top-16 md:top-[5px] lg:top-[65px]
                      left-0 lg:left-16 xl:left-18 right-0 z-30
                      bg-[#0f0f0f] border-b border-[#272727]
                      px-3 sm:px-4 md:px-6 py-3"

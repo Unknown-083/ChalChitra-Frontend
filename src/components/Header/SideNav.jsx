@@ -1,12 +1,9 @@
 import { HomeIcon, User, Twitter } from "lucide-react";
 import { useNavigate, useLocation } from "react-router-dom";
-import { useDispatch } from "react-redux";
 
 const SideNav = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const dispatch = useDispatch();
-
 
   const navItems = [
     {

@@ -17,6 +17,7 @@ import MainLayout from "../layout/MainLayout";
 import { useSelector } from "react-redux";
 import EditProfilePopup from "../components/EditProfilePopup.jsx";
 import Tweets from "../components/Tweets.jsx";
+import { useNavigate } from "react-router-dom";
 
 const Channel = () => {
   const [activeTab, setActiveTab] = useState("videos");
@@ -26,9 +27,11 @@ const Channel = () => {
   const [tweets, setTweets] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [editProfilePopup, setEditProfilePopup] = useState(false);
+  const navigate = useNavigate();
 
   const { id } = useParams();
   const user = useSelector((state) => state.auth.userData);
+  const isAuthenticated = useSelector((state) => state.auth.status);
 
   useEffect(() => {
     const fetchChannelData = async () => {
@@ -72,6 +75,10 @@ const Channel = () => {
   ];
 
   const handleSubscribe = async (id) => {
+    if (!isAuthenticated) {
+      navigate("/login");
+      return;
+    }
     await toggleSubscribe({ channelId: id });
     setIsSubscribed(!isSubscribed);
 
@@ -142,7 +149,7 @@ const Channel = () => {
               </button>
 
               <button className="p-2 bg-[#272727] hover:bg-[#3a3a3a] rounded-full transition-all">
-                <Share2 className="w-5 h-5" />
+                <Share2 className="w-6 h-5" />
               </button>
 
               {user?._id === channelData._id && (
@@ -182,7 +189,7 @@ const Channel = () => {
           </div>
 
           {/* Tabs */}
-          <div className="border-b border-[#272727] mb-6">
+          <div className="border-b border-[#272727]">
             <div className="flex gap-8">
               {["videos", "tweets", "about"].map((tab) => (
                 <button
@@ -207,7 +214,7 @@ const Channel = () => {
           {activeTab === "videos" ? (
             <div>
               {/* Videos Grid/List */}
-              <div className="mb-12">
+              <div className="mt-6 mb-12">
                 <Videos videoArray={videos} grid="false" />
               </div>
             </div>
@@ -215,11 +222,11 @@ const Channel = () => {
           
           : activeTab === "tweets" ? (
             <div className="mb-12">
-              <Tweets userTweets={tweets} />
+              <Tweets userTweets={tweets} channelId={id} />
             </div>
           ) : (
             // About Tab
-            <div className="mb-12">
+            <div className="mt-6 mb-12">
               <div className="bg-[#272727] rounded-2xl p-8">
                 <h2 className="text-2xl font-bold mb-6">About</h2>
 

@@ -1,41 +1,52 @@
 import { useState, useEffect, useCallback } from "react";
 import "./App.css";
-import { Outlet, useNavigate } from "react-router-dom";
+import { Outlet, useNavigate, useLocation } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { login, logout } from "./auth/authSlice";
 import axios from "./utils/axios";
-import { setLikedVideos, setVideos, setWatchHistory, setWatchLater } from "./auth/videoSlice.js";
+import {
+  setLikedVideos,
+  setVideos,
+  setWatchHistory,
+  setWatchLater,
+} from "./auth/videoSlice.js";
 import { formatVideoData } from "./utils/helpers";
 import Loading from "./components/Loading.jsx";
 
 function App() {
   const navigate = useNavigate();
+  const location = useLocation();
   const dispatch = useDispatch();
   const auth = useSelector((state) => state.auth);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // Get current user
+  // Public routes that don't require authentication
+  const publicRoutes = ["/", "/video", "/channel", "/tweets", "/login", "/signup"];
+  const isPublicRoute = publicRoutes.some(
+    (route) => location.pathname === route || location.pathname.startsWith(route + "/")
+  );
+
+  // Get current user (optional - doesn't redirect if fails)
   const getCurrentUser = useCallback(async () => {
     try {
       const { data } = await axios.get("/api/v1/users/get-user");
-      
+
       if (data?.data?.data) {
         dispatch(login(data.data.data));
         return true;
       } else {
-        navigate("/login");
+        dispatch(logout());
         return false;
       }
     } catch (error) {
       console.error("Error fetching current user:", error);
       dispatch(logout());
-      navigate("/login");
       return false;
     }
-  }, [dispatch, navigate]);
+  }, [dispatch]);
 
-  // Fetch all videos
+  // Fetch all videos (PUBLIC - works without auth)
   const getVideos = useCallback(async () => {
     try {
       const { data } = await axios.get("/api/v1/videos");
@@ -45,12 +56,17 @@ function App() {
       dispatch(setVideos(formattedVideos));
     } catch (error) {
       console.error("Error fetching videos:", error);
-      setError("Failed to load videos");
+      // Don't show error for public routes
+      if (!isPublicRoute) {
+        setError("Failed to load videos");
+      }
     }
-  }, [dispatch]);
+  }, [dispatch, isPublicRoute]);
 
-  // Fetch watch history
+  // Fetch watch history (REQUIRES AUTH)
   const getWatchHistory = useCallback(async () => {
+    if (!auth.status) return; // Skip if not authenticated
+
     try {
       const { data } = await axios.get("/api/v1/users/history");
       const allVideos = data.data || [];
@@ -60,91 +76,99 @@ function App() {
     } catch (error) {
       console.error("Error fetching watch history:", error);
     }
-  }, [dispatch]);
+  }, [dispatch, auth.status]);
 
-  // Fetch liked videos
+  // Fetch liked videos (REQUIRES AUTH)
   const getLikedVideos = useCallback(async () => {
+    if (!auth.status) return; // Skip if not authenticated
+
     try {
       const { data } = await axios.get("/api/v1/likes/videos");
       const allVideos = data.data || [];
-      console.log(data.data);
-      
+
       const formattedLiked = allVideos.map(formatVideoData);
-      console.log("Formatted videos :: ", formattedLiked);
-      
       dispatch(setLikedVideos(formattedLiked));
     } catch (error) {
       console.error("Error fetching liked videos:", error);
     }
-  }, [dispatch]);
+  }, [dispatch, auth.status]);
 
+  // Fetch watch later (REQUIRES AUTH)
   const getWatchLater = useCallback(async () => {
+    if (!auth.status) return; // Skip if not authenticated
+
     try {
       const { data } = await axios.get("/api/v1/playlists/watch-later");
-      const allVideos = data.data[0]?.videos || [];      
+      const allVideos = data.data[0]?.videos || [];
       const formattedWatchLater = allVideos && allVideos.map(formatVideoData);
-      dispatch(setWatchLater({
-        id: data.data[0]?._id,
-        videos: formattedWatchLater
-      }));
+      dispatch(
+        setWatchLater({
+          id: data.data[0]?._id,
+          videos: formattedWatchLater,
+        })
+      );
     } catch (error) {
       console.error("Error fetching watch later videos:", error);
     }
-  }, [dispatch]);
+  }, [dispatch, auth.status]);
 
-  // Initialize app - check auth
+  // Initialize app - check auth and load data
   useEffect(() => {
     const initializeApp = async () => {
       setIsLoading(true);
-      
-      // Check if user is already logged in
-      if (auth.status) {
-        console.log("User is already logged in");
-        setIsLoading(false);
-        return;
-      }
 
-      // Try to get current user
-      const isAuthenticated = await getCurrentUser();
-      
-      if (isAuthenticated) {
-        // Load initial data
-        await Promise.all([
-          getVideos(),
-          getWatchHistory(),
-          getLikedVideos(),
-          getWatchLater(),
-        ]);
+      try {
+        // Try to get current user (won't redirect if fails)
+        const isAuthenticated = await getCurrentUser();
+
+        // Always load videos (public content)
+        await getVideos();
+
+        // Load user-specific data only if authenticated
+        if (isAuthenticated) {
+          await Promise.all([
+            getWatchHistory(),
+            getLikedVideos(),
+            getWatchLater(),
+          ]);
+        }
+      } catch (error) {
+        console.error("App initialization error:", error);
+        // Don't block app for public routes
+        if (!isPublicRoute) {
+          setError("Failed to initialize app");
+        }
+      } finally {
+        setIsLoading(false);
       }
-      
-      setIsLoading(false);
     };
 
     initializeApp();
   }, []); // Only run once on mount
 
-  // Fetch videos when auth status changes
+  // Load user data when auth status changes to true
   useEffect(() => {
     if (auth.status) {
-      getVideos();
       getWatchHistory();
       getLikedVideos();
       getWatchLater();
     }
-  }, [auth.status, getVideos]);
+  }, [auth.status, getWatchHistory, getLikedVideos, getWatchLater]);
 
+  // Show loading spinner
   if (isLoading) {
     return <Loading />;
   }
 
-  if (error) {
+  // Show error only for protected routes
+  if (error && !isPublicRoute) {
     return (
-      <div className="h-screen flex items-center justify-center bg-black text-white">
+      <div className="h-screen flex items-center justify-center bg-[#0f0f0f] text-white">
         <div className="text-center">
           <p className="text-red-500 text-xl mb-4">{error}</p>
-          <button 
-            onClick={() => window.location.reload()} 
-            className="bg-white text-black px-6 py-2 rounded-lg"
+          <button
+            onClick={() => window.location.reload()}
+            className="bg-white text-black px-6 py-2 rounded-full hover:bg-gray-200 transition-colors"
           >
             Retry
           </button>

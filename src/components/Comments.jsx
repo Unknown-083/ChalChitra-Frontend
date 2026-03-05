@@ -4,11 +4,14 @@ import { ThumbsUp } from "lucide-react";
 import Input from "./Input.jsx";
 import { timeAgo } from "../utils/helpers.js";
 import { useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
 
 const CommentsSection = ({ inPopup = false, comments, setComments, id, type = "v" }) => {    
   const [isInputFocused, setIsInputFocused] = useState(false);
   const [comment, setComment] = useState("");
   const user = useSelector((state) => state.auth.userData);
+  const navigate = useNavigate();
+  const {status} = useSelector((state) => state.auth);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [likingIds, setLikingIds] = useState([]);
   
@@ -74,16 +77,18 @@ const CommentsSection = ({ inPopup = false, comments, setComments, id, type = "v
 
   return (
     <div className={inPopup ? "" : "mt-4 sm:mt-6"}>
-      <h2 className="text-lg sm:text-xl font-bold mb-3 sm:mb-4">
+      <h2 className="text-lg sm:text-xl font-bold">
         {totalComments} Comments
       </h2>
 
       {/* Add Comment */}
-      <div className="flex gap-2 sm:gap-3 items-start mb-4 sm:mb-6">
+      {status ? (
+        <div className="flex gap-2 mt-3 sm:mt-4 sm:gap-3 items-start mb-4 sm:mb-6">
         <img
           src={user?.avatar?.url}
           alt="Your avatar"
           className="rounded-full w-8 h-8 sm:w-10 sm:h-10 flex-shrink-0"
+          onClick={() => navigate(`/channel/${user?._id}`)}
         />
         <div className="flex-1 flex flex-col sm:flex-row gap-2 items-stretch sm:items-center">
           <Input
@@ -107,6 +112,11 @@ const CommentsSection = ({ inPopup = false, comments, setComments, id, type = "v
           </button>
         </div>
       </div>
+      ) : (
+        <p className="text-sm text-gray-500 text-center py-4">
+          Please log in to add a comment.
+        </p>
+      )}
 
       {/* Comments List */}
       <div className="flex flex-col gap-4">
@@ -117,6 +127,7 @@ const CommentsSection = ({ inPopup = false, comments, setComments, id, type = "v
                 src={comment?.owner?.avatar?.url || user?.avatar?.url}
                 alt={comment?.owner?.username}
                 className="rounded-full w-8 h-8 sm:w-10 sm:h-10 flex-shrink-0"
+                onClick={() => navigate(`/channel/${comment?.owner?._id }`)}
               />
               <div className="flex-1 min-w-0">
                 <div className="flex flex-wrap items-baseline gap-1">
@@ -133,7 +144,9 @@ const CommentsSection = ({ inPopup = false, comments, setComments, id, type = "v
                 <div className="flex gap-2 items-center mt-2">
                   <button
                     className="flex items-center gap-1 group"
-                    onClick={() => toggleCommentLike(comment?._id)}
+                    onClick={() => {
+                      status ? toggleCommentLike(comment?._id) : alert("Please log in to like comments.");
+                    }}
                     disabled={likingIds.includes(comment?._id)}
                     aria-disabled={likingIds.includes(comment?._id)}
                   >

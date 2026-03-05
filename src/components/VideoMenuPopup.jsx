@@ -13,6 +13,7 @@ import { useSelector } from "react-redux";
 import ListPlaylistPopup from "./ListPlaylistPopup";
 import Input from "../components/Input.jsx";
 import Loading from "./Loading";
+import { useNavigate } from "react-router-dom";
 
 const VideoMenuPopup = ({
   videoId,
@@ -47,6 +48,8 @@ const VideoMenuPopup = ({
 
   const { watchLater } = useSelector((state) => state.video);
   const user = useSelector((state) => state.auth.userData);
+  const isAuthenticated = useSelector((state) => state.auth.status);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchVideoDetails = async () => {
@@ -212,7 +215,11 @@ const VideoMenuPopup = ({
               <button
                 className="flex items-center gap-3 px-3 py-2.5 sm:py-3 text-sm sm:text-base
                          hover:bg-[#272727] rounded-lg transition-colors text-left w-full"
-                onClick={() => saveVideoInWatchLater(watchLater.id)}
+                onClick={() => {
+                  isAuthenticated
+                    ? saveVideoInWatchLater(watchLater.id)
+                    : navigate("/login");
+                }}
                 disabled={isLoading}
                 aria-disabled={isLoading}
               >
@@ -224,10 +231,16 @@ const VideoMenuPopup = ({
                 className="flex items-center gap-3 px-3 py-2.5 sm:py-3 text-sm sm:text-base
                          hover:bg-[#272727] rounded-lg transition-colors text-left w-full"
                 onClick={() => {
-                  if (isLoading) return;
-                  setListPlaylistPopup(true);
-                  setMainMenuPopup(false);
+                  if (isAuthenticated) {
+                    if (isLoading) return;
+                    setListPlaylistPopup(true);
+                    setMainMenuPopup(false);
+                  } else {
+                    navigate("/login");
+                  }
                 }}
+                disabled={isLoading}
+                aria-disabled={isLoading}
               >
                 <Bookmark className="w-5 h-5 flex-shrink-0" />
                 <span>Save to Playlist</span>

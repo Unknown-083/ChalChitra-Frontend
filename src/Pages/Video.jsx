@@ -29,10 +29,10 @@ const Video = () => {
   const [listPlaylistPopup, setListPlaylistPopup] = useState(false);
   const [showCommentPopup, setShowCommentPopup] = useState(false);
   const [isVideoMinimized, setIsVideoMinimized] = useState(false);
-  const navigate = useNavigate();  
+  const navigate = useNavigate();
   const videoRef = useRef(null);
   const videoContainerRef = useRef(null);
-
+  const isAuthenticated = useSelector((state) => state.auth.status);
   const { id } = useParams();
 
   useEffect(() => {
@@ -123,8 +123,6 @@ const Video = () => {
     }
   };
 
-  
-
   const scrollToVideo = () => {
     if (videoContainerRef.current) {
       videoContainerRef.current.scrollIntoView({
@@ -140,7 +138,7 @@ const Video = () => {
     if (videoRef.current) {
       videoRef.current.pause();
     }
-  };  
+  };
 
   return (
     <MainLayout>
@@ -239,12 +237,14 @@ const Video = () => {
                       ? "bg-[#272727] text-white"
                       : "bg-white text-black"
                   }`}
-                  onClick={() =>
-                    toggleSubscribe({
-                      channelId: video?.owner?._id,
-                      setVideo,
-                    })
-                  }
+                  onClick={() => {
+                    !isAuthenticated
+                      ? navigate("/login")
+                      : toggleSubscribe({
+                          channelId: video?.owner?._id,
+                          setVideo,
+                        });
+                  }}
                 >
                   {video?.owner?.isSubscribed ? "Subscribed" : "Subscribe"}
                 </button>
@@ -257,7 +257,11 @@ const Video = () => {
                     className={`w-5 h-5 ${
                       video?.hasLiked ? "text-white fill-white" : ""
                     }`}
-                    onClick={() => toggleVideoLike(id, setVideo)}
+                    onClick={() => {
+                      isAuthenticated
+                        ? toggleVideoLike(id, setVideo)
+                        : navigate("/login");
+                    }}
                   />
                   <span className="text-sm font-medium pr-2 border-r border-r-gray-500">
                     {video?.likesCount || 0}
@@ -270,7 +274,11 @@ const Video = () => {
                 </button>
                 <button
                   className="rounded-full px-4 py-2 bg-[#272727] flex gap-2 items-center whitespace-nowrap"
-                  onClick={() => setListPlaylistPopup(true)}
+                  onClick={() => {
+                    isAuthenticated
+                      ? setListPlaylistPopup(true)
+                      : navigate("/login");
+                  }}
                 >
                   <Bookmark className="w-5 h-5" />
                   <span className="text-sm font-medium">Save</span>
@@ -355,7 +363,7 @@ const Video = () => {
                   autoPlay
                   playsInline
                   controlsList="nodownload"
-                  className="w-full h-full"
+                  className="w-full h-full dark:scheme-dark"
                   onDoubleClick={toggleFullscreen}
                 ></video>
               </div>
@@ -389,12 +397,14 @@ const Video = () => {
                           ? "bg-[#272727] text-white hover:bg-[#3f3f3f]"
                           : "bg-white text-black hover:bg-gray-200"
                       }`}
-                      onClick={() =>
-                        toggleSubscribe({
-                          channelId: video?.owner?._id,
-                          setVideo,
-                        })
-                      }
+                      onClick={() => {
+                        isAuthenticated
+                          ? toggleSubscribe({
+                              channelId: video?.owner?._id,
+                              setVideo,
+                            })
+                          : navigate("/login");
+                      }}
                     >
                       {video?.owner?.isSubscribed ? "Subscribed" : "Subscribe"}
                     </button>
@@ -406,7 +416,11 @@ const Video = () => {
                         className={`w-5 h-5 ${
                           video?.hasLiked ? "text-white fill-white" : ""
                         }`}
-                        onClick={() => toggleVideoLike(id, setVideo)}
+                        onClick={() => {
+                          isAuthenticated
+                            ? toggleVideoLike(id, setVideo)
+                            : navigate("/login");
+                        }}
                       />
                       <span className="pr-3 font-medium border-r border-r-gray-400">
                         {video?.likesCount || 0}
@@ -419,7 +433,11 @@ const Video = () => {
                     </div>
                     <button
                       className="rounded-full p-1.5 bg-[#272727] cursor-pointer hover:bg-[#3f3f3f]"
-                      onClick={() => setListPlaylistPopup(true)}
+                      onClick={() => {
+                        isAuthenticated
+                          ? setListPlaylistPopup(true)
+                          : navigate("/login");
+                      }}
                     >
                       <Bookmark className="w-5 h-5" />
                     </button>
@@ -448,7 +466,11 @@ const Video = () => {
                 </div>
 
                 {/* Comments */}
-                <CommentsSection comments={comments} setComments={setComments} id={id} />
+                <CommentsSection
+                  comments={comments}
+                  setComments={setComments}
+                  id={id}
+                />
               </div>
             </div>
 
@@ -499,7 +521,12 @@ const Video = () => {
               </button>
             </div>
             <div className="h-[calc(100%-60px)] overflow-y-auto px-4 py-4">
-              <CommentsSection inPopup={true} comments={comments} setComments={setComments} id={id}/>
+              <CommentsSection
+                inPopup={true}
+                comments={comments}
+                setComments={setComments}
+                id={id}
+              />
             </div>
           </div>
         )}
@@ -523,7 +550,7 @@ const Video = () => {
         `}</style>
       </div>
     </MainLayout>
-  );  
+  );
 };
 
 export default Video;

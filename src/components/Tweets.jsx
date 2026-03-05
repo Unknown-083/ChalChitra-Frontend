@@ -18,7 +18,7 @@ import { useNavigate } from "react-router-dom";
 import Loading from "./Loading";
 import CommentsSection from "./Comments";
 
-const Tweets = ({userTweets} = {}) => {
+const Tweets = ({ userTweets, channelId } = {}) => {
   const [tweets, setTweets] = useState(userTweets || []);
   const [isLoading, setIsLoading] = useState(false);
   const [newTweet, setNewTweet] = useState("");
@@ -30,13 +30,14 @@ const Tweets = ({userTweets} = {}) => {
   const [currentComments, setCurrentComments] = useState([]);
   const [currentTweetId, setCurrentTweetId] = useState(null);
   const [currentTweet, setCurrentTweet] = useState(null);
-  
+
   // Media state
   const [mediaFiles, setMediaFiles] = useState([]);
   const [previewUrls, setPreviewUrls] = useState([]);
   const [isUploadingMedia, setIsUploadingMedia] = useState(false);
-  
+
   const user = useSelector((state) => state.auth.userData);
+  const isAuthenticated = useSelector((state) => state.auth.status);
   const navigate = useNavigate();
   const menuRef = useRef(null);
   const fileInputRef = useRef(null);
@@ -110,8 +111,13 @@ const Tweets = ({userTweets} = {}) => {
 
   // Handle media file selection
   const handleMediaSelect = (event) => {
+    if (!isAuthenticated) {
+      navigate("/login");
+      return;
+    }
+
     const files = Array.from(event.target.files || []);
-    
+
     // Validate file count (max 1 file for current backend)
     if (mediaFiles.length > 0) {
       alert("Only 1 media file per tweet is currently supported");
@@ -124,7 +130,14 @@ const Tweets = ({userTweets} = {}) => {
     }
 
     // Validate file types
-    const validTypes = ["image/jpeg", "image/png", "image/gif", "image/webp", "video/mp4", "video/webm"];
+    const validTypes = [
+      "image/jpeg",
+      "image/png",
+      "image/gif",
+      "image/webp",
+      "video/mp4",
+      "video/webm",
+    ];
     const invalidFiles = files.filter((file) => !validTypes.includes(file.type));
 
     if (invalidFiles.length > 0) {
@@ -158,6 +171,11 @@ const Tweets = ({userTweets} = {}) => {
   };
 
   const handlePostTweet = async () => {
+    if (!isAuthenticated) {
+      navigate("/login");
+      return;
+    }
+
     if (!newTweet.trim() && mediaFiles.length === 0) return;
 
     try {
@@ -208,6 +226,11 @@ const Tweets = ({userTweets} = {}) => {
   };
 
   const handleLikeTweet = async (tweetId) => {
+    if (!isAuthenticated) {
+      navigate("/login");
+      return;
+    }
+
     try {
       await axios.post(`/api/v1/likes/toggle/t/${tweetId}`);
       setTweets(
@@ -220,8 +243,8 @@ const Tweets = ({userTweets} = {}) => {
                   ? tweet.likesCount - 1
                   : tweet.likesCount + 1,
               }
-            : tweet,
-        ),
+            : tweet
+        )
       );
     } catch (error) {
       console.error("Error liking tweet:", error);
@@ -229,6 +252,11 @@ const Tweets = ({userTweets} = {}) => {
   };
 
   const handleDeleteTweet = async (tweetId) => {
+    if (!isAuthenticated) {
+      navigate("/login");
+      return;
+    }
+
     try {
       await axios.delete(`/api/v1/tweets/${tweetId}`);
       setTweets(tweets.filter((tweet) => tweet._id !== tweetId));
@@ -239,6 +267,11 @@ const Tweets = ({userTweets} = {}) => {
   };
 
   const handleEditTweet = async (tweetId) => {
+    if (!isAuthenticated) {
+      navigate("/login");
+      return;
+    }
+
     if (!editContent.trim()) return;
 
     try {
@@ -247,8 +280,8 @@ const Tweets = ({userTweets} = {}) => {
       });
       setTweets(
         tweets.map((tweet) =>
-          tweet._id === tweetId ? { ...tweet, content: editContent } : tweet,
-        ),
+          tweet._id === tweetId ? { ...tweet, content: editContent } : tweet
+        )
       );
       setEditingTweetId(null);
       setEditContent("");
@@ -270,95 +303,114 @@ const Tweets = ({userTweets} = {}) => {
   return (
     <div className="w-full min-h-screen pb-20 lg:pb-0">
       <div className="w-full max-w-2xl mx-auto">
-        {/* Create Tweet */}
-        <div className="border-b border-[#272727] p-3 md:p-4 bg-[#0f0f0f]">
-          <div className="flex gap-2 md:gap-3">
-            <img
-              src={user?.avatar?.url || "/default-avatar.png"}
-              alt={user?.fullname}
-              className="w-9 h-9 md:w-10 md:h-10 rounded-full flex-shrink-0 object-cover bg-gradient-to-br from-teal-600 to-green-800"
-              onClick={() => navigate("/channel/" + user?._id)}
-            />
-            <div className="flex-1 min-w-0">
-              <textarea
-                value={newTweet}
-                onChange={(e) => setNewTweet(e.target.value)}
-                placeholder="What's happening?"
-                className="w-full bg-transparent border-none text-sm md:text-base resize-none 
-                         focus:outline-none placeholder:text-gray-500 min-h-[70px] md:min-h-[80px] text-white"
-                maxLength={280}
+        {/* Create Tweet - Show only if authenticated */}
+        {isAuthenticated ? (
+          <div className="border-b border-[#272727] p-3 md:p-4 bg-[#0f0f0f]">
+            <div className="flex gap-2 md:gap-3">
+              <img
+                src={user?.avatar?.url || "#"}
+                alt={user?.fullname}
+                className="w-9 h-9 md:w-10 md:h-10 rounded-full flex-shrink-0 object-cover bg-gradient-to-br from-teal-600 to-green-800 cursor-pointer hover:opacity-80 transition-opacity"
+                onClick={() => navigate("/channel/" + user?._id)}
               />
+              <div className="flex-1 min-w-0">
+                <textarea
+                  value={newTweet}
+                  onChange={(e) => setNewTweet(e.target.value)}
+                  placeholder="What's happening?"
+                  className="w-full bg-transparent border-none text-sm md:text-base resize-none 
+                         focus:outline-none placeholder:text-gray-500 min-h-[70px] md:min-h-[80px] text-white"
+                  maxLength={280}
+                />
 
-              {/* Media Preview */}
-              {previewUrls.length > 0 && (
-                <div className="mt-3 relative rounded-lg overflow-hidden bg-[#272727] max-w-sm group">
-                  {mediaFiles[0].type.startsWith("image/") ? (
-                    <img
-                      src={previewUrls[0]}
-                      alt="Preview"
-                      className="w-full h-auto object-cover"
+                {/* Media Preview */}
+                {previewUrls.length > 0 && (
+                  <div className="mt-3 relative rounded-lg overflow-hidden bg-[#272727] max-w-sm group">
+                    {mediaFiles[0].type.startsWith("image/") ? (
+                      <img
+                        src={previewUrls[0]}
+                        alt="Preview"
+                        className="w-full h-auto object-cover"
+                      />
+                    ) : (
+                      <div className="w-full h-40 flex items-center justify-center bg-black">
+                        <Video className="w-12 h-12 text-gray-400" />
+                      </div>
+                    )}
+                    <button
+                      onClick={() => removeMedia(0)}
+                      className="absolute top-2 right-2 p-1.5 bg-black/70 hover:bg-black/90 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+                    >
+                      <X className="w-5 h-5" />
+                    </button>
+                  </div>
+                )}
+
+                <div className="flex items-center justify-between mt-3">
+                  <div className="flex gap-2">
+                    {/* Image Upload Button */}
+                    <button
+                      onClick={() => {
+                        fileInputRef.current?.click();
+                      }}
+                      disabled={isUploadingMedia || mediaFiles.length >= 1}
+                      className="p-2 text-blue-500 hover:bg-blue-500/10 rounded-full transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                      title="Add image"
+                    >
+                      <ImagePlus className="w-5 h-5" />
+                    </button>
+
+                    {/* Hidden File Input */}
+                    <input
+                      ref={fileInputRef}
+                      type="file"
+                      multiple
+                      accept="image/jpeg,image/png,image/gif,image/webp,video/mp4,video/webm"
+                      onChange={handleMediaSelect}
+                      className="hidden"
                     />
-                  ) : (
-                    <div className="w-full h-40 flex items-center justify-center bg-black">
-                      <Video className="w-12 h-12 text-gray-400" />
-                    </div>
-                  )}
-                  <button
-                    onClick={() => removeMedia(0)}
-                    className="absolute top-2 right-2 p-1.5 bg-black/70 hover:bg-black/90 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
-                  >
-                    <X className="w-5 h-5" />
-                  </button>
-                </div>
-              )}
+                  </div>
 
-              <div className="flex items-center justify-between mt-3">
-                <div className="flex gap-2">
-                  {/* Image Upload Button */}
-                  <button
-                    onClick={() => {
-                      fileInputRef.current?.click();
-                    }}
-                    disabled={isUploadingMedia || mediaFiles.length >= 1}
-                    className="p-2 text-blue-500 hover:bg-blue-500/10 rounded-full transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                    title="Add image"
-                  >
-                    <ImagePlus className="w-5 h-5" />
-                  </button>
-
-                  {/* Hidden File Input */}
-                  <input
-                    ref={fileInputRef}
-                    type="file"
-                    multiple
-                    accept="image/jpeg,image/png,image/gif,image/webp,video/mp4,video/webm"
-                    onChange={handleMediaSelect}
-                    className="hidden"
-                  />
-                </div>
-
-                <div className="flex items-center gap-2">
-                  <span
-                    className={`text-xs ${
-                      newTweet.length > 260 ? "text-red-500" : "text-gray-500"
-                    }`}
-                  >
-                    {newTweet.length}/280
-                  </span>
-                  <button
-                    onClick={handlePostTweet}
-                    disabled={(!newTweet.trim() && mediaFiles.length === 0) || isPosting}
-                    className="px-4 md:px-5 py-1.5 md:py-2 bg-white text-black rounded-full font-medium 
+                  <div className="flex items-center gap-2">
+                    <span
+                      className={`text-xs ${
+                        newTweet.length > 260 ? "text-red-500" : "text-gray-500"
+                      }`}
+                    >
+                      {newTweet.length}/280
+                    </span>
+                    <button
+                      onClick={handlePostTweet}
+                      disabled={
+                        (!newTweet.trim() && mediaFiles.length === 0) || isPosting
+                      }
+                      className="px-4 md:px-5 py-1.5 md:py-2 bg-white text-black rounded-full font-medium 
                              hover:bg-gray-200 transition-colors disabled:opacity-50 
                              disabled:cursor-not-allowed text-sm"
-                  >
-                    {isPosting ? "Posting..." : "Post"}
-                  </button>
+                    >
+                      {isPosting ? "Posting..." : "Post"}
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
-        </div>
+        ) : channelId && channelId !== user?._id ? (
+          <></>
+        ) : (
+          // Sign in prompt for non-authenticated users
+          <div className="border-b border-[#272727] p-4 md:p-5 bg-[#0f0f0f] text-center">
+            <p className="text-gray-400 text-sm md:text-base">
+              <button
+                onClick={() => navigate("/login")}
+                className="text-white hover:underline font-medium"
+              >
+                Sign in
+              </button>{" "}
+              to post tweets
+            </p>
+          </div>
+        )}
 
         {/* Tweets List */}
         <div>
@@ -469,7 +521,7 @@ const Tweets = ({userTweets} = {}) => {
                             <button
                               onClick={() =>
                                 setShowMenuId(
-                                  showMenuId === tweet._id ? null : tweet._id,
+                                  showMenuId === tweet._id ? null : tweet._id
                                 )
                               }
                               className="p-1 hover:bg-[#272727] rounded-full transition-colors"
@@ -512,14 +564,14 @@ const Tweets = ({userTweets} = {}) => {
                       {/* Media Display */}
                       {tweet.image?.url && (
                         <div className="mt-3 rounded-lg overflow-hidden max-w-sm">
-                          {(tweet.image.url.endsWith(".mp4") || tweet.image.url.endsWith(".webm")) ? (
+                          {tweet.image.url.endsWith(".mp4") ||
+                          tweet.image.url.endsWith(".webm") ? (
                             <video
                               src={tweet.image.url}
                               controls
                               controlsList="nodownload"
                               playsInline
-                              className="w-full h-auto object-cover bg-black scheme-dark"
-                              
+                              className="w-full h-auto object-cover bg-black"
                             />
                           ) : (
                             <img
@@ -568,14 +620,7 @@ const Tweets = ({userTweets} = {}) => {
                           <div className="p-1.5 rounded-full group-hover:bg-green-500/10 transition-colors">
                             <Share2 className="w-4 h-4" />
                           </div>
-                        </button>
-
-                        <button
-                          className="ml-auto p-1.5 text-gray-500 hover:text-blue-500 
-                                   hover:bg-blue-500/10 rounded-full transition-colors"
-                        >
-                          <Bookmark className="w-4 h-4" />
-                        </button>
+                        </button>                        
                       </div>
                     </div>
                   </div>
@@ -590,12 +635,12 @@ const Tweets = ({userTweets} = {}) => {
           <>
             {/* Backdrop */}
             <div
-              className="fixed inset-0 bg-black/60 z-40 backdrop-blur-sm"
+              className="fixed inset-0 bg-black/60 z-50 backdrop-blur-sm"
               onClick={() => setCommentPopup(false)}
             />
 
             {/* Modal */}
-            <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+            <div className="fixed inset-0 z-60 flex items-center justify-center p-4">
               <div className="w-full max-w-2xl max-h-[75vh] md:max-h-[90vh] bg-[#0f0f0f] rounded-2xl border border-[#272727] shadow-2xl flex flex-col overflow-hidden">
                 {/* Modal Header */}
                 <div className="flex items-center justify-between p-4 md:p-5 border-b border-[#272727]">
@@ -613,7 +658,10 @@ const Tweets = ({userTweets} = {}) => {
                   <div className="border-b border-[#272727] p-4 md:p-5 bg-[#161616]">
                     <div className="flex gap-3">
                       <img
-                        src={currentTweet.owner?.avatar?.url || "/default-avatar.png"}
+                        src={
+                          currentTweet.owner?.avatar?.url ||
+                          "/default-avatar.png"
+                        }
                         alt={currentTweet.owner?.fullname}
                         className="w-10 h-10 md:w-12 md:h-12 rounded-full flex-shrink-0 object-cover"
                       />
@@ -655,6 +703,22 @@ const Tweets = ({userTweets} = {}) => {
           </>
         )}
       </div>
+
+      <style jsx>{`
+        .custom-scrollbar::-webkit-scrollbar {
+          width: 8px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+          background: transparent;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+          background: #272727;
+          border-radius: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+          background: #3f3f3f;
+        }
+      `}</style>
     </div>
   );
 };

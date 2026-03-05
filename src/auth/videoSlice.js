@@ -24,24 +24,37 @@ const videoSlice = createSlice({
 
     watchLater: {
       id: "",
-      videos: []
-    }
+      videos: [],
+    },
   },
   reducers: {
     setVideos: (state, action) => {
-      state.videos = action.payload
+      state.videos = action.payload;
     },
     setWatchHistory: (state, action) => {
-      state.watchHistory = action.payload
+      state.watchHistory = action.payload;
     },
     setLikedVideos: (state, action) => {
-      state.likedVideos = action.payload
+      state.likedVideos = action.payload;
     },
     setWatchLater: (state, action) => {
-      state.watchLater = action.payload
-    }
+      ((state.watchLater.id = action.payload.id),
+        (state.watchLater.videos = action.payload.videos));
+    },
+    clearVideoState: (state) => {
+      // Reset to initial state on logout
+      state.watchHistory = [];
+      state.likedVideos = [];
+      state.watchLater = { id: null, videos: [] };
+    },
   },
 });
 
 export default videoSlice.reducer;
-export const { setVideos, setWatchHistory, setLikedVideos, setWatchLater } = videoSlice.actions;
+export const {
+  setVideos,
+  setWatchHistory,
+  setLikedVideos,
+  setWatchLater,
+  clearVideoState,
+} = videoSlice.actions;

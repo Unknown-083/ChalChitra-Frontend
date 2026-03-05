@@ -15,14 +15,17 @@ import { fetchSubscriptions } from "../../utils/getSubscriptions.js";
 import { useNavigate } from "react-router-dom";
 import axios from "../../utils/axios.js";
 import { logout as authLogout } from "../../auth/authSlice";
-
+import { useDispatch } from "react-redux";
+import { clearVideoState } from "../../auth/videoSlice.js";
 
 const SideNavPopUp = ({ closeSideNav }) => {
   const [isClosing, setIsClosing] = useState(false);
   const [subscriptions, setSubscriptions] = useState([]);
   const user = useSelector((state) => state.auth.userData);
+  const { status } = useSelector((state) => state.auth);
   const { watchLater } = useSelector((state) => state.video);
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   useEffect(() => {
     const getSubscriptions = async () => {
@@ -60,21 +63,26 @@ const SideNavPopUp = ({ closeSideNav }) => {
       <span className="text-md truncate">{name.fullname}</span>
     </button>
   );
-  
-  const handleLogout = () => {
-    axios
-      .post("/api/v1/users/logout")
-      .then((res) => {
-        console.log("Logged out", res);
-        dispatch(authLogout());
-        navigate("/login");
-      })
-      .catch((err) => {
-        console.error(
-          "Logout error:",
-          err.response ? err.response.data : err.message
-        );
-      });
+
+  const handleLogout = async () => {
+    const confirmLogout = window.confirm("Are you sure you want to logout?");
+
+    if (!confirmLogout) return;
+
+    try {
+      await axios.post("/api/v1/users/logout");
+      dispatch(authLogout());
+      dispatch(clearVideoState());
+      localStorage.clear();
+      sessionStorage.clear();
+    } catch (err) {
+      console.error("Logout error:", err);
+      dispatch(authLogout());
+      dispatch(clearVideoState());
+      localStorage.clear();
+      sessionStorage.clear();
+      window.location.href = "/login";
+    }
   };
 
   return (
@@ -157,47 +165,63 @@ const SideNavPopUp = ({ closeSideNav }) => {
             >
               You
             </p>
-            <NavItem
-              icon={User}
-              label="Your Channel"
-              onClick={() => {
-                navigate(`/channel/${user._id}`);
-                closeSideNav();
-              }}
-            />
-            <NavItem
-              icon={History}
-              label="History"
-              onClick={() => {
-                navigate("/history");
-                closeSideNav();
-              }}
-            />
-            <NavItem
-              icon={Clock}
-              label="Watch Later"
-              onClick={() => {
-                navigate(`/playlists/${watchLater.id}`);
-                closeSideNav();
-              }}
-            />
-            <NavItem
-              icon={ThumbsUp}
-              label="Liked Videos"
-              onClick={() => {
-                navigate("/liked-videos");
-                closeSideNav();
-              }}
-            />
-            <NavItem
-              icon={LogOut}
-              label="Logout"
-              classname="text-red-500 hover:text-red-400"
-              onClick={() => {
-                handleLogout();
-                closeSideNav();
-              }}
-            />
+
+            {status && (
+              <>
+                <NavItem
+                  icon={User}
+                  label="Your Channel"
+                  onClick={() => {
+                    navigate(`/channel/${user._id}`);
+                    closeSideNav();
+                  }}
+                />
+                <NavItem
+                  icon={History}
+                  label="History"
+                  onClick={() => {
+                    navigate("/history");
+                    closeSideNav();
+                  }}
+                />
+                <NavItem
+                  icon={Clock}
+                  label="Watch Later"
+                  onClick={() => {
+                    navigate(`/playlists/${watchLater.id}`);
+                    closeSideNav();
+                  }}
+                />
+                <NavItem
+                  icon={ThumbsUp}
+                  label="Liked Videos"
+                  onClick={() => {
+                    navigate("/liked-videos");
+                    closeSideNav();
+                  }}
+                />
+                <NavItem
+                  icon={LogOut}
+                  label="Logout"
+                  classname="text-red-500 hover:text-red-400"
+                  onClick={() => {
+                    handleLogout();
+                    closeSideNav();
+                  }}
+                />
+              </>
+            )}
+            {!status && (
+              <NavItem
+                icon={User}
+                label="Login"
+                classname="text-green-500 hover:text-green-400"
+                onClick={() => {
+                  navigate("/login");
+                  closeSideNav();
+                }}
+              />
+            )}
           </div>
         </div>
       </aside>
