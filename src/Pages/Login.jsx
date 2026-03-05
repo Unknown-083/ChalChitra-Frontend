@@ -5,6 +5,7 @@ import axios from "../utils/axios.js";
 import { login as authLogin } from "../auth/authSlice";
 import { useDispatch } from "react-redux";
 import { AlertCircle } from "lucide-react";
+import Logo from "../components/Header/Logo.jsx";
 
 const Login = () => {
   const [username, setUsername] = useState("");
@@ -75,9 +76,9 @@ const Login = () => {
       <form onSubmit={login} className="w-full">
         <div className="flex flex-col gap-6 w-full max-w-md mx-auto p-8 bg-[#0f0f0f] border border-[#272727] rounded-xl shadow-2xl">
           {/* Header */}
-          <div className="text-center mb-4">
-            <h2 className="text-4xl font-bold text-white mb-2">Welcome Back</h2>
-            <p className="text-gray-400 text-sm">Sign in to your account</p>
+          <div className="flex flex-col items-center mb-4">
+            <Logo classname="scale-150"/>
+            <p className="text-gray-400 text-sm mt-3">Sign in to your account</p>
           </div>
 
           {/* Error Message */}

@@ -3,6 +3,7 @@ import Input from "../components/Input";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "../utils/axios.js";
 import { AlertCircle, Upload, X, Image as ImageIcon } from "lucide-react";
+import Logo from "../components/Header/Logo.jsx";
 
 const Signup = () => {
   const [avatar, setAvatar] = useState(null);
@@ -146,8 +147,9 @@ const Signup = () => {
       <form onSubmit={signup} className="w-full">
         <div className="flex flex-col gap-6 w-full max-w-2xl mx-auto p-8 bg-[#0f0f0f] border border-[#272727] rounded-xl shadow-2xl">
           {/* Header */}
-          <div className="text-center mb-4">
-            <h2 className="text-4xl font-bold text-white mb-2">Create Account</h2>
+          <div className="flex flex-col items-center mb-4">
+            <Logo classname="scale-150"/>
+            <h2 className="text-4xl font-bold text-white mt-3 mb-2">Create Account</h2>
             <p className="text-gray-400 text-sm">Join us and get started today</p>
           </div>
 

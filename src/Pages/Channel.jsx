@@ -155,7 +155,7 @@ const Channel = () => {
               {user?._id === channelData._id && (
                 <button className="p-2 bg-[#272727] hover:bg-[#3a3a3a] rounded-full transition-all">
                   <Pencil
-                    className="w-5 h-5"
+                    className="w-6 h-5"
                     onClick={() => setEditProfilePopup(true)}
                   />
                 </button>

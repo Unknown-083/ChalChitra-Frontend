@@ -120,10 +120,10 @@ const Header = ({ onMenuClick }) => {
             />
             <button
               className="absolute right-0 top-1/2 transform -translate-y-1/2 
-                           hover:bg-[#272727] p-3 px-4 rounded-r-full transition-colors 
+                           hover:bg-[#272727] p-2.5 px-4 rounded-r-full transition-colors 
                            border border-[#272727]"
             >
-              <Search className="w-5 h-4 text-[#EEEEEE] cursor-pointer" />
+              <Search className="w-5 h-5 text-[#EEEEEE] cursor-pointer" />
             </button>
           </div>
         </div>
@@ -140,13 +140,13 @@ const Header = ({ onMenuClick }) => {
 
           {/* Upload/Create Button */}
           <button
-            className="flex items-center gap-1.5 sm:gap-2 border border-[#272727] 
-                     text-[#EEF0E5] px-2 sm:px-3 md:px-4 py-1.5 sm:py-2 
-                     cursor-pointer rounded-full transition-all transform 
+            className="flex items-center gap-1.5 sm:gap-2 sm:border border-[#272727] 
+                     text-[#EEF0E5] sm:px-3 md:px-4 sm:py-2 
+                     cursor-pointer sm:rounded-full transition-all transform 
                      hover:scale-105 hover:bg-[#272727] whitespace-nowrap"
             onClick={() => navigate("/upload")}
           >
-            <Upload className="w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0" />
+            <Upload className="w-5 h-5 flex-shrink-0" />
             <span className="hidden sm:inline text-sm md:text-base">
               Create
             </span>
